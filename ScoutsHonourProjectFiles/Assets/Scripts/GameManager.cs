@@ -157,6 +157,10 @@ public class GameManager : MonoBehaviour
     public Text numberOfPlumsInv;
     public Text numberOfMangosInv;
 
+    public GameObject[] journalApple;
+    public GameObject[] journalPlum;
+    public GameObject[] journalMango;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -242,7 +246,7 @@ public class GameManager : MonoBehaviour
         /// CONDITION BARS INCREASING WITH ACTIONS (need to first activate these bools in-game)
         if (isEating && fed < 100)
         {
-            fed += 2 * Time.deltaTime;
+            fed += 6 * Time.deltaTime;
 
             //amountFed += 2 * Time.deltaTime;
             //set bool false once amountFed has reached desired value;
@@ -250,7 +254,8 @@ public class GameManager : MonoBehaviour
 
         if (isEatingMango)
         {
-            health -= Time.deltaTime;
+            health -= 10*Time.deltaTime;
+            Debug.Log("health should decrease!");
         }
 
         healthBar.fillAmount = health / 100;
@@ -443,8 +448,8 @@ public class GameManager : MonoBehaviour
         {
             collectWoodPrompt.SetActive(false);
             //activateAxePrompt.SetActive(false);
-            axe2.SetActive(false);
-            axeActive = false;
+            //axe2.SetActive(false);
+            //axeActive = false;
         }
 
         if (collectWaterEnabled)
@@ -745,6 +750,10 @@ public class GameManager : MonoBehaviour
         numberOfApples++;
         //ui text display to indicate collected
         Debug.Log("apple collected");
+        foreach (GameObject ui in journalApple)
+        {
+            ui.SetActive(true);
+        }
     }
 
     public void CollectPlum()
@@ -756,6 +765,10 @@ public class GameManager : MonoBehaviour
         numberOfPlums++;
         //ui text display to indicate collected
         Debug.Log("plum collected");
+        foreach (GameObject ui in journalPlum)
+        {
+            ui.SetActive(true);
+        }
     }
 
     public void CollectMango()
@@ -767,6 +780,10 @@ public class GameManager : MonoBehaviour
         numberOfMangos++;
         //ui text display to indicate collected
         Debug.Log("mango collected");
+        foreach (GameObject ui in journalMango)
+        {
+            ui.SetActive(true);
+        }
     }
 
     public void CollectWood()  //activated when clicking collect wood button
