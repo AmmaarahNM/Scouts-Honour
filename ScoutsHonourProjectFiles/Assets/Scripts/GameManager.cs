@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
 
     bool waterCollected;
     bool woodCollected;
-    bool fishCaught;
+    public bool fishCaught;
 
     public bool collectWaterEnabled;
     public GameObject collectWaterPrompt;
@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
     public bool startFishingEnabled;
     public GameObject fishingRodPrompt;
     public GameObject fishingRod;
-    bool rodActive;
+    public bool rodActive;
 
     public CharacterController controller;
     public PlayerMovement PM;
@@ -161,6 +161,15 @@ public class GameManager : MonoBehaviour
     public GameObject[] journalPlum;
     public GameObject[] journalMango;
 
+    public GameObject hands;
+
+    public GameObject movingToBag;
+    public Image addingIcon;
+    public Sprite[] addingImages;
+    //bool addingToInventory;
+
+    public TerrainActivationTriggers[] terrainScripts;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -179,6 +188,20 @@ public class GameManager : MonoBehaviour
         numberOfPlumsInv.text = numberOfPlums.ToString() + "/3";
         numberOfMangosInv.text = numberOfMangos.ToString() + "/3";
 
+        foreach (TerrainActivationTriggers terrain in terrainScripts)
+        {
+            terrain.terrainPiece.SetActive(terrain.inRangeOfTerrain);
+        }
+
+        if (rodActive || gamePaused || axeActive || chemSetOpen)
+        {
+            hands.SetActive(false);
+        }
+
+        else
+        {
+            hands.SetActive(true);
+        }
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             gamePaused = true;
@@ -294,6 +317,7 @@ public class GameManager : MonoBehaviour
                 if (!aloeCollected)
                 {
                     AloeCollection();
+                    
                 }
 
                 else
@@ -596,18 +620,19 @@ public class GameManager : MonoBehaviour
             setUpLogsPrompt.SetActive(false);
         }
 
-   
-
+        
         /// PLAYER HAS RESOURCES UI
-        hasWater.SetActive(waterCollected);
-        hasWood.SetActive(woodCollected);
-        hasFish.SetActive(fishCaught);
+        //hasWater.SetActive(waterCollected);
+        //hasWood.SetActive(woodCollected);
+        //hasFish.SetActive(fishCaught);
 
         waterInventory.SetActive(waterCollected);
         woodInventory.SetActive(woodCollected);
         fishInventory.SetActive(fishCaught);
 
     }
+
+    
     IEnumerator ReactivateMouse()
     {
         yield return new WaitForSeconds(3);
@@ -680,6 +705,31 @@ public class GameManager : MonoBehaviour
 
     }
 
+    public void FishingOutcome(float range)
+    {
+        if (range > 11)
+        {
+            fishCaught = true;
+            fishInventory.SetActive(true);
+            AddToInventory(0);
+        }
+    }
+
+    public void AddToInventory(int index)
+    {
+        //set image source to index
+        addingIcon.sprite = addingImages[index];
+        movingToBag.SetActive(true);
+        
+        StartCoroutine(DeactivateMovingIcon());
+    }
+
+    IEnumerator DeactivateMovingIcon()
+    {
+        yield return new WaitForSeconds(1);
+        movingToBag.SetActive(false);
+    }
+
     public void CloseInventory()
     {
         Debug.Log("This fn works");
@@ -698,6 +748,7 @@ public class GameManager : MonoBehaviour
         
         aloeInventory.SetActive(true);
         aloeCollected = true;
+        AddToInventory(8);
 
         //UI text saying new plant found! or aloe collected
     }
@@ -713,7 +764,8 @@ public class GameManager : MonoBehaviour
 
         gingerInventory.SetActive(true);
         gingerCollected = true;
-        
+        AddToInventory(7);
+
         //UI text display
     }
 
@@ -734,6 +786,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(4);
         //update water collected amount
         waterCollected = true; //need this to activate treat water task
+        AddToInventory(6);
         collectingWater.SetActive(false);  //deactivate collecting UI
         WaterSound.SetActive(false);
         controller.enabled = true; //Reactivate character controller
@@ -746,6 +799,7 @@ public class GameManager : MonoBehaviour
         collectAppleEnabled = false;
         //picking apple sound
         appleCollected = true;
+        AddToInventory(5);
         appleInventory.SetActive(true);
         numberOfApples++;
         //ui text display to indicate collected
@@ -761,6 +815,7 @@ public class GameManager : MonoBehaviour
         collectPlumEnabled = false;
         //picking fruit sound
         plumCollected = true;
+        AddToInventory(4);
         plumInventory.SetActive(true);
         numberOfPlums++;
         //ui text display to indicate collected
@@ -776,6 +831,7 @@ public class GameManager : MonoBehaviour
         collectMangoEnabled = false;
         //picking fruit sound
         mangoCollected = true;
+        AddToInventory(3);
         mangoInventory.SetActive(true);
         numberOfMangos++;
         //ui text display to indicate collected
@@ -804,6 +860,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(4);
         //update wood collected amount
         woodCollected = true; //need this to activate fire task
+        AddToInventory(2);
         numberOfLogs++;
         numberOfLogsUI.text = numberOfLogs.ToString() + "/10";
         collectingWood.SetActive(false);//deactivate collecting UI
@@ -846,6 +903,7 @@ public class GameManager : MonoBehaviour
                 axeActive = true;
                 axeCollected = true;
                 axeInventory.SetActive(true);
+                AddToInventory(1);
                 axeInBag.SetActive(true);
                 StartCoroutine(AxeNotSeen());
                 

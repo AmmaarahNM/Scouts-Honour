@@ -16,7 +16,7 @@ public class PlayerMovement : MonoBehaviour
     public LayerMask groundMask;
 
     Vector3 velocity;
-    bool isGrounded;
+    public bool isGrounded;
 
   
 
@@ -31,7 +31,7 @@ public class PlayerMovement : MonoBehaviour
             velocity.y = -2f;
         }
 
-        if (Input.GetKey("left shift") && isGrounded)
+        if (Input.GetKey(KeyCode.LeftShift) && isGrounded)
         {
             speed = 8;
         }
@@ -50,6 +50,7 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            isGrounded = false;
         }
 
         velocity.y += gravity * Time.deltaTime;

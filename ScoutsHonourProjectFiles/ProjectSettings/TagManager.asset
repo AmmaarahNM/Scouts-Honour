@@ -18,11 +18,12 @@ TagManager:
   - AppleTree
   - MangoTree
   - ChemArea
+  - firstTerrain
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Terrain
   - Water
   - UI
   - 
