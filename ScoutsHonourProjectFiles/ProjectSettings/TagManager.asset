@@ -19,6 +19,7 @@ TagManager:
   - MangoTree
   - ChemArea
   - firstTerrain
+  - fire
   layers:
   - Default
   - TransparentFX

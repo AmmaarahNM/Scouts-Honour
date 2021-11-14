@@ -15,17 +15,28 @@ public class PlayerMovement : MonoBehaviour
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
 
+    Vector3 move;
     Vector3 velocity;
     public bool isGrounded;
 
-  
+    public float bobSpeed;
+    public float bobAmount;
+    float defaultYPos;
+    float timer;
 
+    private void Start()
+    {
+        defaultYPos = GM.cam.transform.localPosition.y;
+    }
 
     void Update()
     {
         this.transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
+        bobSpeed = speed * 2;
+        bobAmount = speed * 0.05f;
+        HeadBob();
         if (isGrounded && velocity.y < 0)
         {
             velocity.y = -2f;
@@ -43,7 +54,7 @@ public class PlayerMovement : MonoBehaviour
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
 
-        Vector3 move = transform.right * x + transform.forward * z;
+        move = transform.right * x + transform.forward * z;
 
         controller.Move(move * speed * Time.deltaTime);
 
@@ -56,6 +67,16 @@ public class PlayerMovement : MonoBehaviour
         velocity.y += gravity * Time.deltaTime;
 
         controller.Move(velocity * Time.deltaTime);
+    }
+
+    void HeadBob()
+    {
+        if (Mathf.Abs(move.x) > 0.1f || Mathf.Abs(move.z) > 0.1f)
+        {
+            Debug.Log("This shit works apparently");
+            timer += Time.deltaTime * bobSpeed;
+            GM.cam.transform.localPosition = new Vector3(GM.cam.transform.localPosition.x, defaultYPos + Mathf.Sin(timer) * bobAmount, GM.cam.transform.localPosition.z);
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -126,6 +147,11 @@ public class PlayerMovement : MonoBehaviour
         {
             GM.activateChemSet = true;
         }
+
+        if (other.gameObject.tag == "fire")
+        {
+            GM.FireBurn();
+        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -186,6 +212,11 @@ public class PlayerMovement : MonoBehaviour
         {
             GM.activateChemSet = false;
         }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        
     }
 
     /*private void OnCollisionStay(Collision collision)

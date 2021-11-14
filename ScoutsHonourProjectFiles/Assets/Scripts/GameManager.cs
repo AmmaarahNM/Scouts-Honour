@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviour
     public GameObject waterInventory;
     public GameObject fishInventory;
     public GameObject woodInventory;
-    
+
 
     public bool startFishingEnabled;
     public GameObject fishingRodPrompt;
@@ -161,12 +161,29 @@ public class GameManager : MonoBehaviour
     public GameObject[] journalPlum;
     public GameObject[] journalMango;
 
-    public GameObject hands;
+    //public GameObject hands;
 
     public GameObject movingToBag;
     public Image addingIcon;
     public Sprite[] addingImages;
     //bool addingToInventory;
+
+    bool isPoisoned;
+    bool isBurnt;
+    bool isBurning;
+    bool isHealing;
+
+    public GameObject eatingGingerUI;
+    public GameObject eatingAloeUI;
+    public GameObject eatGingerPrompt;
+    public GameObject eatAloePrompt;
+
+    public GameObject dangerUI;
+    bool barOnZero;
+
+    public GameObject poisonedIcon;
+    public GameObject burntIcon;
+
 
     public TerrainActivationTriggers[] terrainScripts;
 
@@ -176,10 +193,10 @@ public class GameManager : MonoBehaviour
         mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Time.timeScale = 1;
         gamePaused = false;
-        
+
     }
 
-    
+
     // Update is called once per frame
     void FixedUpdate()
     {
@@ -188,12 +205,15 @@ public class GameManager : MonoBehaviour
         numberOfPlumsInv.text = numberOfPlums.ToString() + "/3";
         numberOfMangosInv.text = numberOfMangos.ToString() + "/3";
 
+        poisonedIcon.SetActive(isPoisoned);
+        burntIcon.SetActive(isBurnt);
+
         foreach (TerrainActivationTriggers terrain in terrainScripts)
         {
             terrain.terrainPiece.SetActive(terrain.inRangeOfTerrain);
         }
 
-        if (rodActive || gamePaused || axeActive || chemSetOpen)
+        /*if (rodActive || gamePaused || axeActive || chemSetOpen)
         {
             hands.SetActive(false);
         }
@@ -201,23 +221,23 @@ public class GameManager : MonoBehaviour
         else
         {
             hands.SetActive(true);
-        }
+        }*/
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             gamePaused = true;
             escapeTab.SetActive(true);
             Time.timeScale = 0;
         }
-        
+
         if (Input.GetKeyDown(KeyCode.B))
         {
             inventoryOpen = true;
-     
+
             ActivateInventory();
-               
+
         }
 
-      //journal.SetActive(journalOpen);
+        //journal.SetActive(journalOpen);
 
         if (Input.GetKey(KeyCode.C))
         {
@@ -231,7 +251,7 @@ public class GameManager : MonoBehaviour
         /// CONDITION BARS DECREASING OVER TIME
         if (fed > 1 && !isEating && !inventoryOpen)
         {
-            fed -= (Time.deltaTime) / 3; 
+            fed -= (Time.deltaTime) / 3;
         }
         fedBar.fillAmount = fed / 100;
 
@@ -275,10 +295,15 @@ public class GameManager : MonoBehaviour
             //set bool false once amountFed has reached desired value;
         }
 
-        if (isEatingMango)
+        if (isEatingMango || isBurning)
         {
             health -= 10*Time.deltaTime;
             Debug.Log("health should decrease!");
+        }
+
+        if (isHealing)
+        {
+            health += 5 * Time.deltaTime;
         }
 
         healthBar.fillAmount = health / 100;
@@ -301,9 +326,36 @@ public class GameManager : MonoBehaviour
         }
 
         /// LOSE CONDITION
-        if (fed <= 1 || hydrated <= 1 || energy <= 1)
+        if (fed <= 0.1 || hydrated <= 0.1 || energy <= 0.1)
         {
-            //loseFunction
+            barOnZero = true;
+        }
+
+        else
+        {
+            barOnZero = false;
+        }
+
+        if (barOnZero)
+        {
+            dangerUI.SetActive(true);
+            if (health > 0.1)
+            {
+                health -= Time.deltaTime / 4;
+            }
+
+            else
+            {
+                Debug.Log("YOU LOST GAME OVER");
+            }
+        }
+
+        else
+        {
+            if (!isBurnt && !isPoisoned)
+            {
+                dangerUI.SetActive(false);
+            }
         }
 
         ///TRIGGER COLLECTING STUFF
@@ -398,6 +450,7 @@ public class GameManager : MonoBehaviour
         {
             collectMangoPrompt.SetActive(false);
         }
+
 
         if (collectGingerEnabled)
         {
@@ -720,6 +773,8 @@ public class GameManager : MonoBehaviour
         //set image source to index
         addingIcon.sprite = addingImages[index];
         movingToBag.SetActive(true);
+        //if index equals etc (use cases) bagUpdates.text = ...
+        
         
         StartCoroutine(DeactivateMovingIcon());
     }
@@ -728,6 +783,7 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(1);
         movingToBag.SetActive(false);
+        //bagUpdates.text = ' '
     }
 
     public void CloseInventory()
@@ -953,6 +1009,66 @@ public class GameManager : MonoBehaviour
         
     }
 
+    public void EatGinger()
+    {
+        eatGingerPrompt.SetActive(false);
+        isEating = true;
+        CloseInventory();
+        controller.enabled = false;
+        eatingGingerUI.SetActive(true);
+        gingerCollected = false;
+        gingerInventory.SetActive(false);
+        //eating sound
+
+        if (isPoisoned)
+        {
+            isHealing = true;
+        }
+        StartCoroutine(StopEatingGinger());
+
+    }
+
+    IEnumerator StopEatingGinger()
+    {
+        yield return new WaitForSeconds(2);
+        isEating = false;
+        isHealing = false;
+        isPoisoned = false;
+        controller.enabled = true;
+        eatingGingerUI.SetActive(false);
+        
+    }
+
+    public void EatAloe()
+    {
+        eatAloePrompt.SetActive(false);
+        isEating = true;
+        CloseInventory();
+        controller.enabled = false;
+        eatingAloeUI.SetActive(true);
+        aloeCollected = false;
+        aloeInventory.SetActive(false);
+        //eating sound
+
+        if (isBurnt)
+        {
+            isHealing = true;
+        }
+        StartCoroutine(StopEatingAloe());
+
+    }
+
+    IEnumerator StopEatingAloe()
+    {
+        yield return new WaitForSeconds(2);
+        isEating = false;
+        isHealing = false;
+        isBurnt = false;
+        controller.enabled = true;
+        eatingAloeUI.SetActive(false);
+
+    }
+
     public void EatApple()
     {
         eatApplePrompt.SetActive(false);
@@ -967,6 +1083,7 @@ public class GameManager : MonoBehaviour
         
 
     }
+
 
     IEnumerator StopEatingApple()
     {
@@ -1020,8 +1137,29 @@ public class GameManager : MonoBehaviour
         controller.enabled = true;
         eatingMangoUI.SetActive(false);
         mangoDangerInfo.SetActive(true);
+        isPoisoned = true;
+        dangerUI.SetActive(true); 
 
         yield return new WaitForSeconds(3);
         mangoDangerInfo.SetActive(false);
+        dangerUI.SetActive(false);
+    }
+
+    public void FireBurn()
+    {
+        isBurnt = true;
+        isBurning = true;
+        dangerUI.SetActive(true);
+        StartCoroutine(StopBurning());
+        
+    }
+
+    IEnumerator StopBurning()
+    {
+        yield return new WaitForSeconds(1);
+        isBurning = false;
+
+        yield return new WaitForSeconds(3);
+        dangerUI.SetActive(false);
     }
 }
