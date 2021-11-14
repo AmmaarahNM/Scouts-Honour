@@ -32,9 +32,9 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         this.transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        isGrounded = Physics.CheckSphere(groundCheck.position, 0.1f, groundMask);
 
-        bobSpeed = speed * 2;
+        bobSpeed = speed * 2.5f;
         bobAmount = speed * 0.05f;
         HeadBob();
         if (isGrounded && velocity.y < 0)
@@ -214,10 +214,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        
-    }
+   
 
     /*private void OnCollisionStay(Collision collision)
     {

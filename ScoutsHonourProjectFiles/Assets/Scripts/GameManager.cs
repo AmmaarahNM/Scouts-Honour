@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    public GameObject storageFullUI;
+
     public Image fedBar;
     public Image hydratedBar;
     public Image energyBar;
@@ -65,6 +67,7 @@ public class GameManager : MonoBehaviour
 
     public bool startFireEnabled;
     public GameObject setUpLogsPrompt;
+    public Text setUpLogsText;
     public bool logsActive;
     public GameObject fireplaceLogs;
 
@@ -114,7 +117,7 @@ public class GameManager : MonoBehaviour
     public GameObject axe1;
     public GameObject axe2;
     bool axeActive;
-    public GameObject axeInBag;
+    //public GameObject axeInBag;
     //public GameObject activateAxePrompt;
     public GameObject axeInventory;
 
@@ -172,6 +175,7 @@ public class GameManager : MonoBehaviour
     bool isBurnt;
     bool isBurning;
     bool isHealing;
+    public GameObject isBurningInfo;
 
     public GameObject eatingGingerUI;
     public GameObject eatingAloeUI;
@@ -184,7 +188,12 @@ public class GameManager : MonoBehaviour
     public GameObject poisonedIcon;
     public GameObject burntIcon;
 
-
+    public Text bagUpdates;
+    public GameObject unequipRod;
+    public GameObject unequipAxePrompt;
+    public GameObject packChemSetPrompt;
+    public GameObject closeJournalPrompt;
+    public GameObject textBackground;
     public TerrainActivationTriggers[] terrainScripts;
 
     // Start is called before the first frame update
@@ -200,7 +209,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        numberOfLogsInv.text = numberOfLogs.ToString() + "/10";
+        numberOfLogsInv.text = numberOfLogs.ToString() + "/15";
         numberOfApplesInv.text = numberOfApples.ToString() + "/3";
         numberOfPlumsInv.text = numberOfPlums.ToString() + "/3";
         numberOfMangosInv.text = numberOfMangos.ToString() + "/3";
@@ -229,7 +238,7 @@ public class GameManager : MonoBehaviour
             Time.timeScale = 0;
         }
 
-        if (Input.GetKeyDown(KeyCode.B))
+        if (Input.GetKeyDown(KeyCode.B) && !journalOpen)
         {
             inventoryOpen = true;
 
@@ -238,6 +247,49 @@ public class GameManager : MonoBehaviour
         }
 
         //journal.SetActive(journalOpen);
+
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            if (journalOpen)
+            {
+                CloseJournal();
+                CloseInventory();
+            }
+
+            else
+            {
+                inventoryOpen = true;
+                ActivateInventory();
+                OpenJournal();
+            }
+        }
+
+        closeJournalPrompt.SetActive(journalOpen);
+        unequipAxePrompt.SetActive(axeActive);
+        unequipRod.SetActive(rodActive);
+        packChemSetPrompt.SetActive(chemSetOpen);
+
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            if (axeCollected)
+            {
+                if (axeActive)
+                {
+                    axe2.SetActive(false);
+                    axeActive = false;
+                }
+
+                else
+                {
+                    axe2.SetActive(true);
+                    axeActive = true;
+                }
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            ActivateChemSet();
+        }
 
         if (Input.GetKey(KeyCode.C))
         {
@@ -249,7 +301,7 @@ public class GameManager : MonoBehaviour
             compass.SetActive(false);
         }
         /// CONDITION BARS DECREASING OVER TIME
-        if (fed > 1 && !isEating && !inventoryOpen)
+        if (fed > 0.1 && !isEating && !inventoryOpen)
         {
             fed -= (Time.deltaTime) / 3;
         }
@@ -326,7 +378,7 @@ public class GameManager : MonoBehaviour
         }
 
         /// LOSE CONDITION
-        if (fed <= 0.1 || hydrated <= 0.1 || energy <= 0.1)
+        if (fed <= 1 || hydrated <= 1 || energy <= 1)
         {
             barOnZero = true;
         }
@@ -375,6 +427,7 @@ public class GameManager : MonoBehaviour
                 else
                 {
                     Debug.Log("aloe already collected");
+                    StorageFull();
                 }
                 
             }
@@ -419,7 +472,7 @@ public class GameManager : MonoBehaviour
 
                 else
                 {
-                    Debug.Log("plum storage full");
+                    StorageFull();
                 }
             }
         }
@@ -441,7 +494,7 @@ public class GameManager : MonoBehaviour
 
                 else
                 {
-                    Debug.Log("mango storage full");
+                    StorageFull();
                 }
             }
         }
@@ -464,7 +517,7 @@ public class GameManager : MonoBehaviour
 
                 else
                 {
-                    Debug.Log("ginger already collected");
+                    StorageFull();
                 }
 
             }
@@ -507,9 +560,9 @@ public class GameManager : MonoBehaviour
             collectWoodPrompt.SetActive(true);
             if (Input.GetKeyDown(KeyCode.E))
             {
-                if (numberOfLogs >= 10)
+                if (numberOfLogs >= 15)
                 {
-                    Debug.Log("ALREADY COLLECTED WOOD");
+                    StorageFull();
                 }
 
                 else
@@ -536,7 +589,7 @@ public class GameManager : MonoBehaviour
             {
                 if (waterCollected)
                 {
-                    Debug.Log("ALREADY COLLECTED WATER");
+                    StorageFull();
                 }
 
                 else
@@ -578,7 +631,7 @@ public class GameManager : MonoBehaviour
         if (startFishingEnabled)
         {
             fishingRod.SetActive(rodActive);
-            fishingRodPrompt.SetActive(true);
+            fishingRodPrompt.SetActive(!rodActive);
             if (Input.GetKeyDown(KeyCode.F))
             {
                 if (rodActive)
@@ -609,7 +662,7 @@ public class GameManager : MonoBehaviour
                 setUpLogsPrompt.SetActive(true);
                 if (Input.GetKeyDown(KeyCode.E))
                 {
-                    if (numberOfLogs >= 1)
+                    if (numberOfLogs >= 10)
                     {
                         setUpLogsPrompt.SetActive(false);
                         numberOfLogs -= 1;
@@ -627,7 +680,8 @@ public class GameManager : MonoBehaviour
 
                     else
                     {
-                        setUpLogsPrompt.SetActive(false);
+                        //setUpLogsPrompt.SetActive(false);
+                        setUpLogsText.text = "Need 10 wood to build a fire!";
                         //deactivate setup prompt and activate not enough logs UI
                         Debug.Log("not enough logs!!!");
                     }
@@ -671,6 +725,7 @@ public class GameManager : MonoBehaviour
         else
         {
             setUpLogsPrompt.SetActive(false);
+            setUpLogsText.text = "Setup fireplace logs (E)";
         }
 
         
@@ -773,9 +828,61 @@ public class GameManager : MonoBehaviour
         //set image source to index
         addingIcon.sprite = addingImages[index];
         movingToBag.SetActive(true);
+        textBackground.SetActive(true);
+
+        switch (index)
+        {
+            case 0:
+                bagUpdates.text = "Fish caught!";
+                break;
+
+            case 1:
+                bagUpdates.text = "Axe added to inventory";
+                break;
+
+            case 2:
+                if (axeActive)
+                {
+                    bagUpdates.text = "+5 wood";
+                }
+
+                else
+                {
+                    bagUpdates.text = "+1 wood";
+                }
+                
+                break;
+
+            case 3:
+                bagUpdates.text = "+1 manchineel";
+                break;
+
+            case 4:
+                bagUpdates.text = "+1 plum";
+                break;
+
+            case 5:
+                bagUpdates.text = "+1 apple";
+                break;
+
+            case 6:
+                bagUpdates.text = "Flask full";
+                break;
+
+            case 7:
+                bagUpdates.text = "Ginger collected";
+                break;
+
+            case 8:
+                bagUpdates.text = "Aloe collected";
+                break;
+
+            default: bagUpdates.text = " ";
+                break;
+        }
         //if index equals etc (use cases) bagUpdates.text = ...
-        
-        
+
+
         StartCoroutine(DeactivateMovingIcon());
     }
 
@@ -783,7 +890,10 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(1);
         movingToBag.SetActive(false);
-        //bagUpdates.text = ' '
+
+        yield return new WaitForSeconds(3);
+        bagUpdates.text = " ";
+        textBackground.SetActive(false);
     }
 
     public void CloseInventory()
@@ -917,8 +1027,30 @@ public class GameManager : MonoBehaviour
         //update wood collected amount
         woodCollected = true; //need this to activate fire task
         AddToInventory(2);
-        numberOfLogs++;
-        numberOfLogsUI.text = numberOfLogs.ToString() + "/10";
+
+        if (!axeActive)
+        {
+           
+            numberOfLogs++;
+            
+        }
+
+        else
+        {
+            if (numberOfLogs <= 10)
+            {
+                numberOfLogs += 5;
+            }
+
+            else 
+            {
+                numberOfLogs = 15;
+            }
+
+            
+        }
+        
+        numberOfLogsUI.text = numberOfLogs.ToString() + "/15";
         collectingWood.SetActive(false);//deactivate collecting UI
         
         controller.enabled = true; //Reactivate character controller
@@ -926,6 +1058,25 @@ public class GameManager : MonoBehaviour
 
     }
 
+    public void StorageFull()
+    {
+        storageFullUI.SetActive(true);
+        collectAloeEnabled = false;
+        collectAppleEnabled = false;
+        collectGingerEnabled = false;
+        collectMangoEnabled = false;
+        collectPlumEnabled = false;
+        collectWaterEnabled = false;
+        collectWoodEnabled = false;
+
+        StartCoroutine(DeactivateSFUI());
+    }
+
+    IEnumerator DeactivateSFUI()
+    {
+        yield return new WaitForSeconds(2);
+        storageFullUI.SetActive(false);
+    }
     public void ActivateChemSet()
     {
         
@@ -942,6 +1093,7 @@ public class GameManager : MonoBehaviour
                 controller.enabled = false;
                 chemSetOpen = true;
             }
+
 
         CloseInventory();
             
@@ -960,7 +1112,7 @@ public class GameManager : MonoBehaviour
                 axeCollected = true;
                 axeInventory.SetActive(true);
                 AddToInventory(1);
-                axeInBag.SetActive(true);
+                //axeInBag.SetActive(true);
                 StartCoroutine(AxeNotSeen());
                 
                 //activate axe in inventory
@@ -974,7 +1126,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         axeSeen = false;
         yield return new WaitForSeconds(2f);
-        axeInBag.SetActive(false);
+        //axeInBag.SetActive(false);
     }
 
     public void ActivateAxe()
@@ -992,7 +1144,7 @@ public class GameManager : MonoBehaviour
                 axe2.SetActive(true);
                 axeActive = true;
             }
-
+            
             CloseInventory();
         }
     }
@@ -1012,7 +1164,7 @@ public class GameManager : MonoBehaviour
     public void EatGinger()
     {
         eatGingerPrompt.SetActive(false);
-        isEating = true;
+        //isEating = true;
         CloseInventory();
         controller.enabled = false;
         eatingGingerUI.SetActive(true);
@@ -1031,7 +1183,7 @@ public class GameManager : MonoBehaviour
     IEnumerator StopEatingGinger()
     {
         yield return new WaitForSeconds(2);
-        isEating = false;
+        //isEating = false;
         isHealing = false;
         isPoisoned = false;
         controller.enabled = true;
@@ -1042,7 +1194,7 @@ public class GameManager : MonoBehaviour
     public void EatAloe()
     {
         eatAloePrompt.SetActive(false);
-        isEating = true;
+        //isEating = true;
         CloseInventory();
         controller.enabled = false;
         eatingAloeUI.SetActive(true);
@@ -1061,7 +1213,7 @@ public class GameManager : MonoBehaviour
     IEnumerator StopEatingAloe()
     {
         yield return new WaitForSeconds(2);
-        isEating = false;
+        //isEating = false;
         isHealing = false;
         isBurnt = false;
         controller.enabled = true;
@@ -1099,7 +1251,7 @@ public class GameManager : MonoBehaviour
         CloseInventory();
         controller.enabled = false;
         eatingPlumUI.SetActive(true);
-        numberOfApples--;
+        numberOfPlums--;
         //eating sound
         StartCoroutine(StopEatingPlum());
 
@@ -1150,6 +1302,7 @@ public class GameManager : MonoBehaviour
         isBurnt = true;
         isBurning = true;
         dangerUI.SetActive(true);
+        isBurningInfo.SetActive(true);
         StartCoroutine(StopBurning());
         
     }
@@ -1160,6 +1313,7 @@ public class GameManager : MonoBehaviour
         isBurning = false;
 
         yield return new WaitForSeconds(3);
+        isBurningInfo.SetActive(false);
         dangerUI.SetActive(false);
     }
 }
