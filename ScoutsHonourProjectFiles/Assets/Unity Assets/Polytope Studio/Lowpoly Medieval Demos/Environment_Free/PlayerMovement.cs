@@ -44,7 +44,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKey(KeyCode.LeftShift) && isGrounded)
         {
-            speed = 8;
+            speed = 6;
         }
         else
         {
@@ -81,6 +81,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (other.gameObject.tag == "Log")
+        {
+            GM.LogEnabled = true;
+        }
         if (other.gameObject.tag == "Water")
         {
             GM.collectWaterEnabled = true;

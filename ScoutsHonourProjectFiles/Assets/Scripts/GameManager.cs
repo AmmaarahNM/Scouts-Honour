@@ -12,6 +12,11 @@ public class GameManager : MonoBehaviour
     public Image energyBar;
     public Image healthBar;
 
+    public GameObject FoodWarning;
+    public GameObject WaterWarning;
+    public GameObject EnergyWarning;
+    public GameObject HealthWarning;
+
     float fed = 100;
     float hydrated = 100;
     float energy = 100;
@@ -31,6 +36,9 @@ public class GameManager : MonoBehaviour
     public bool collectWaterEnabled;
     public GameObject collectWaterPrompt;
     public GameObject collectingWater;
+
+    public bool LogEnabled;
+    public GameObject RestLog;
 
     public bool collectWoodEnabled;
     public GameObject collectWoodPrompt;
@@ -378,19 +386,47 @@ public class GameManager : MonoBehaviour
         }
 
         /// LOSE CONDITION
-        if (fed <= 1 || hydrated <= 1 || energy <= 1)
+        if (fed <= 1)
+               
         {
             barOnZero = true;
+            FoodWarning.SetActive(true);
         }
 
         else
         {
             barOnZero = false;
+            FoodWarning.SetActive(false);
+        }
+
+    if (hydrated <= 1)
+        {
+            barOnZero = true;
+            WaterWarning.SetActive(true);
+        }
+
+    else
+        {
+            barOnZero = false;
+            WaterWarning.SetActive(false);
+        }
+
+    if (energy <= 1)
+        {
+            barOnZero = true;
+            EnergyWarning.SetActive(true);
+        }
+
+    else
+        {
+            barOnZero = false;
+            EnergyWarning.SetActive(false);
         }
 
         if (barOnZero)
         {
             dangerUI.SetActive(true);
+            HealthWarning.SetActive(true);
             if (health > 0.1)
             {
                 health -= Time.deltaTime / 4;
@@ -599,6 +635,31 @@ public class GameManager : MonoBehaviour
                     ObjectivesCompleted(3);
                 }
                 
+            }
+        }
+
+        else
+        {
+            collectWaterPrompt.SetActive(false);
+        }
+
+        if (LogEnabled)
+        {
+            RestLog.SetActive(true);
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+               // if (waterCollected)
+                //{
+               //     StorageFull();
+               // }
+
+               // else
+               // {
+               
+                //    CollectWater();
+                  //  ObjectivesCompleted(3);
+                //}
+
             }
         }
 
