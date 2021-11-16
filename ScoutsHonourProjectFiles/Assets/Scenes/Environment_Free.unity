@@ -2218,6 +2218,10 @@ MonoBehaviour:
   reelSlider: {fileID: 1248635297}
   sliderIcon: {fileID: 1248635295}
   range: 0
+  fishLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  hands: {fileID: 8494161}
 --- !u!1 &142384850
 GameObject:
   m_ObjectHideFlags: 0
@@ -16039,6 +16043,7 @@ RectTransform:
   - {fileID: 1026973781}
   - {fileID: 904438973}
   - {fileID: 1404740273}
+  - {fileID: 1636286934}
   m_Father: {fileID: 0}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -18561,7 +18566,10 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: You've eaten a poisonous fruit! Health affected
+  m_Text: 'You''ve eaten a poisonous fruit! Health affected
+
+    Find an antidote
+    to heal yourself'
 --- !u!222 &1268354627
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -20378,7 +20386,10 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: You got too close to the fire and burnt yourself! Health affected
+  m_Text: 'You got too close to the fire and burnt yourself! Health affected
+
+    Find
+    a way to tend to your burns and heal'
 --- !u!222 &1404740275
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -23880,6 +23891,96 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1635987331}
   m_Mesh: {fileID: -3282209725294213285, guid: f226223b3a11d2d4b980aaa520301583, type: 3}
+--- !u!1 &1636286933
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1636286934}
+  - component: {fileID: 1636286937}
+  - component: {fileID: 1636286936}
+  - component: {fileID: 1636286935}
+  m_Layer: 5
+  m_Name: RestingUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &1636286934
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1636286933}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1069436901}
+  m_RootOrder: 67
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1636286935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1636286933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c17c4cc200c78d145b921fefecec613b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  collectionUI: {fileID: 1636286936}
+  timePassed: 0
+--- !u!114 &1636286936
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1636286933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 3
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1636286937
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1636286933}
+  m_CullTransparentMesh: 1
 --- !u!1 &1638425235
 GameObject:
   m_ObjectHideFlags: 0
@@ -27784,6 +27885,8 @@ MonoBehaviour:
   - {fileID: 2086216993}
   - {fileID: 2130121864}
   - {fileID: 2106399909}
+  restingUI: {fileID: 1636286933}
+  energyDecrease: 0
 --- !u!1001 &1851112875
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -11,6 +11,8 @@ public class FishingGame : MonoBehaviour
     bool isIncreasing = true;
     bool isCasting;
     public float range;
+    public LayerMask fishLayer;
+    public GameObject hands;
     // Start is called before the first frame update
     void Start()
     {
@@ -66,9 +68,9 @@ public class FishingGame : MonoBehaviour
             {
                 range = reelSlider.value * 20; //TEST THIS VALUE!
                 Debug.Log(range);
-                GM.FishingOutcome(range);
+                
                 StartCoroutine(DelayReset());
-                //activate CastLine();
+                //CastLine();
                 
             }
 
@@ -78,12 +80,30 @@ public class FishingGame : MonoBehaviour
 
     IEnumerator DelayReset()
     {
-        yield return new WaitForSeconds(0.5f);
+        //Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        //Debug.DrawRay(ray.origin, (Vector3.forward) * range, Color.red);
+        Debug.DrawRay(new Vector3(transform.localPosition.x, transform.localPosition.y - 2, transform.localPosition.z), (Vector3.forward) * range, Color.red);
+        //Debug.DrawRay(new Vector3(hands.transform.position.x, hands.transform.position.y - 2, hands.transform.position.z), (Vector3.forward) * range, Color.red);
+        if (Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 2, transform.position.z), Vector3.forward, range, fishLayer))
+        {
+            Debug.Log("fish caught");
+            //deactivate that fish
+            //GM.FishingOutcome(range); but change the range 11 bit in the fn
+        }
+
+        else
+        {
+            Debug.Log("no fish caught");
+        }
+
+        yield return new WaitForSeconds(1f);
         reelSlider.value = 0;
     }
 
     void CastLine()
     {
+        //Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        Debug.DrawRay(new Vector3(transform.localPosition.x, transform.localPosition.y - 2, transform.localPosition.z), Vector3.forward * range, Color.red); 
         //instantiate trigger at raycast position (distance of range)
         reelSlider.value = 0;
     }

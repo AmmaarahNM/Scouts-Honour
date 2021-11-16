@@ -42,13 +42,15 @@ public class PlayerMovement : MonoBehaviour
             velocity.y = -2f;
         }
 
-        if (Input.GetKey(KeyCode.LeftShift) && isGrounded)
+        if (Input.GetKey(KeyCode.LeftShift))
         {
             speed = 6;
+            GM.energyDecrease = 2.5f;
         }
         else
         {
             speed = 4;
+            GM.energyDecrease = 4;
         }
 
         float x = Input.GetAxis("Horizontal");
@@ -58,11 +60,11 @@ public class PlayerMovement : MonoBehaviour
 
         controller.Move(move * speed * Time.deltaTime);
 
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        /*if (Input.GetButtonDown("Jump") && isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
             isGrounded = false;
-        }
+        }*/
 
         velocity.y += gravity * Time.deltaTime;
 
@@ -215,6 +217,10 @@ public class PlayerMovement : MonoBehaviour
         if (other.gameObject.tag == "ChemArea")
         {
             GM.activateChemSet = false;
+        }
+        if (other.gameObject.tag == "Log")
+        {
+            GM.LogEnabled = false;
         }
     }
 

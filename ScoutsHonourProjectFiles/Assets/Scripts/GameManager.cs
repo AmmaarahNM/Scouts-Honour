@@ -144,11 +144,11 @@ public class GameManager : MonoBehaviour
     public GameObject collectMangoPrompt;
 
     public GameObject appleInventory;
-    bool appleCollected;
+    //bool appleCollected;
     public GameObject plumInventory;
-    bool plumCollected;
+    //bool plumCollected;
     public GameObject mangoInventory;
-    bool mangoCollected;
+    //bool mangoCollected;
 
     public bool activateChemSet;
     public GameObject purifyPrompt;
@@ -204,12 +204,19 @@ public class GameManager : MonoBehaviour
     public GameObject textBackground;
     public TerrainActivationTriggers[] terrainScripts;
 
+    public GameObject restingUI;
+    Vector3 previousPosition;
+    Vector3 previousRotation;
+
+    public float energyDecrease;
+
     // Start is called before the first frame update
     void Start()
     {
         mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Time.timeScale = 1;
         gamePaused = false;
+        energyDecrease = 4;
 
     }
 
@@ -225,6 +232,7 @@ public class GameManager : MonoBehaviour
         poisonedIcon.SetActive(isPoisoned);
         burntIcon.SetActive(isBurnt);
 
+        
         foreach (TerrainActivationTriggers terrain in terrainScripts)
         {
             terrain.terrainPiece.SetActive(terrain.inRangeOfTerrain);
@@ -246,7 +254,7 @@ public class GameManager : MonoBehaviour
             Time.timeScale = 0;
         }
 
-        if (Input.GetKeyDown(KeyCode.B) && !journalOpen)
+        if (Input.GetKeyDown(KeyCode.I) && !journalOpen)
         {
             inventoryOpen = true;
 
@@ -323,25 +331,25 @@ public class GameManager : MonoBehaviour
 
         if (energy > 1 && !isResting && !inventoryOpen)
         {
-            energy -= (Time.deltaTime) / 5;
+            energy -= (Time.deltaTime) / energyDecrease;
         }
         energyBar.fillAmount = energy / 100;
 
         if (numberOfApples <= 0)
         {
-            appleCollected = false;
+            //appleCollected = false;
             appleInventory.SetActive(false);
         }
 
         if (numberOfPlums <= 0)
         {
-            plumCollected = false;
+            //plumCollected = false;
             plumInventory.SetActive(false);
         }
 
         if (numberOfMangos <= 0)
         {
-            mangoCollected = false;
+            //mangoCollected = false;
             mangoInventory.SetActive(false);
         }
 
@@ -357,12 +365,18 @@ public class GameManager : MonoBehaviour
 
         if (isEatingMango || isBurning)
         {
-            health -= 10*Time.deltaTime;
+            health -= 3*Time.deltaTime;
             Debug.Log("health should decrease!");
+        }
+
+        if ((isBurnt || isPoisoned) && (!isEatingMango && !isBurning) )
+        {
+            health -= Time.deltaTime/2;
         }
 
         if (isHealing)
         {
+            if (health < 100)
             health += 5 * Time.deltaTime;
         }
 
@@ -379,7 +393,7 @@ public class GameManager : MonoBehaviour
 
         if (isResting && energy < 100)
         {
-            energy += 2 * Time.deltaTime;
+            energy += 4 * Time.deltaTime;
 
             //amountRested += 2 * Time.deltaTime;
             //set bool false once amountRested has reached desired value;
@@ -390,36 +404,66 @@ public class GameManager : MonoBehaviour
                
         {
             barOnZero = true;
-            FoodWarning.SetActive(true);
+            
+        }
+
+       
+
+        else if (hydrated <= 1)
+        {
+            barOnZero = true;
+            
+        }
+
+    
+
+        else if (energy <= 1)
+        {
+            barOnZero = true;
+            
         }
 
         else
         {
             barOnZero = false;
+        }
+
+   
+
+        if (fed <= 10)
+
+        {
+            
+            FoodWarning.SetActive(true);
+        }
+
+        else
+        {
+           
             FoodWarning.SetActive(false);
         }
 
-    if (hydrated <= 1)
+        if (hydrated <= 10)
         {
-            barOnZero = true;
+            
             WaterWarning.SetActive(true);
         }
 
-    else
+        else
         {
-            barOnZero = false;
+           
             WaterWarning.SetActive(false);
         }
 
-    if (energy <= 1)
+        if (energy <= 10)
         {
-            barOnZero = true;
+            
             EnergyWarning.SetActive(true);
         }
 
-    else
+        else
         {
-            barOnZero = false;
+            
             EnergyWarning.SetActive(false);
         }
 
@@ -487,6 +531,7 @@ public class GameManager : MonoBehaviour
                 else
                 {
                     Debug.Log("apple storage full");
+                    StorageFull();
                 }
             }
         }
@@ -643,29 +688,20 @@ public class GameManager : MonoBehaviour
             collectWaterPrompt.SetActive(false);
         }
 
-        if (LogEnabled)
+        if (LogEnabled && !isResting)
         {
             RestLog.SetActive(true);
             if (Input.GetKeyDown(KeyCode.E))
             {
-               // if (waterCollected)
-                //{
-               //     StorageFull();
-               // }
-
-               // else
-               // {
-               
-                //    CollectWater();
-                  //  ObjectivesCompleted(3);
-                //}
+                RestFunction();
+                
 
             }
         }
 
         else
         {
-            collectWaterPrompt.SetActive(false);
+            RestLog.SetActive(false);
         }
 
         if (axeSeen)
@@ -801,7 +837,32 @@ public class GameManager : MonoBehaviour
 
     }
 
-    
+    public void RestFunction()
+    {
+        isResting = true;
+        previousPosition = PM.gameObject.transform.position;
+        previousRotation = PM.gameObject.transform.eulerAngles;
+        controller.enabled = false;
+        restingUI.SetActive(true);
+
+
+        PM.gameObject.transform.position = new Vector3(65.6f, 3f, 64f);
+        PM.gameObject.transform.eulerAngles = new Vector3(1, 185.2f, 0);
+        StartCoroutine(RestOver());
+    }
+
+    IEnumerator RestOver()
+    {
+        yield return new WaitForSeconds(4);
+        isResting = false;
+        PM.gameObject.transform.position = previousPosition;
+        PM.gameObject.transform.eulerAngles = previousRotation;
+        controller.enabled = true;
+        restingUI.SetActive(false);
+        
+
+    }
+
     IEnumerator ReactivateMouse()
     {
         yield return new WaitForSeconds(3);
@@ -1025,7 +1086,7 @@ public class GameManager : MonoBehaviour
     {
         collectAppleEnabled = false;
         //picking apple sound
-        appleCollected = true;
+        //appleCollected = true;
         AddToInventory(5);
         appleInventory.SetActive(true);
         numberOfApples++;
@@ -1041,7 +1102,7 @@ public class GameManager : MonoBehaviour
     {
         collectPlumEnabled = false;
         //picking fruit sound
-        plumCollected = true;
+        //plumCollected = true;
         AddToInventory(4);
         plumInventory.SetActive(true);
         numberOfPlums++;
@@ -1057,7 +1118,7 @@ public class GameManager : MonoBehaviour
     {
         collectMangoEnabled = false;
         //picking fruit sound
-        mangoCollected = true;
+        //mangoCollected = true;
         AddToInventory(3);
         mangoInventory.SetActive(true);
         numberOfMangos++;
