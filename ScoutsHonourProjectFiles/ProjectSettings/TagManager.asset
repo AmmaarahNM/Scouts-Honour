@@ -21,6 +21,7 @@ TagManager:
   - firstTerrain
   - fire
   - Log
+  - fish
   layers:
   - Default
   - TransparentFX

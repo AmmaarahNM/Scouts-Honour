@@ -9,10 +9,17 @@ public class FishingGame : MonoBehaviour
     public Slider reelSlider;
     public GameObject sliderIcon;
     bool isIncreasing = true;
-    bool isCasting;
+    
     public float range;
     public LayerMask fishLayer;
     public GameObject hands;
+    public Text fishingInfo;
+    public GameObject fishingInfoText;
+
+    public bool isCasting;
+    public bool isReeling;
+    public bool canReel;
+    public bool hitFish;
     // Start is called before the first frame update
     void Start()
     {
@@ -26,9 +33,9 @@ public class FishingGame : MonoBehaviour
         if (GM.rodActive)
         {
             
-            if (Input.GetKey(KeyCode.Mouse0))
+            if (Input.GetKey(KeyCode.Mouse0) && !canReel)
             {
-                isCasting = true;
+                isCasting = true;             //ONLY IF NO FISH IN INVENTORY - OTHERWISE SAY FISH AREALDY CAUGHT
                 if (isIncreasing)
                 {
                     if (reelSlider.value < 1)
@@ -69,42 +76,102 @@ public class FishingGame : MonoBehaviour
                 range = reelSlider.value * 20; //TEST THIS VALUE!
                 Debug.Log(range);
                 
+                fishingInfo.text = "Casting...";
+                fishingInfoText.SetActive(true);
                 StartCoroutine(DelayReset());
                 //CastLine();
                 
             }
 
+            if (canReel)
+            {
+                if (Input.GetKey(KeyCode.Space))
+                {
+                    isReeling = true;
+                    fishingInfo.text = "Reeling";
+                }
 
+                else
+                {
+                    isReeling = false;
+                    fishingInfo.text = "Fish caught! Time to reel it in (hold spacebar)";
+                }
+            }
+
+            else
+            {
+                isReeling = false;
+            }
+
+            if (isReeling)
+            {
+                if (range > 0)
+                {
+                    range -= 4 * Time.deltaTime;
+                }
+
+                else
+                {
+                    GM.FishingOutcome();
+                    fishingInfo.text = "";
+                    canReel = false;
+                    hitFish = false;
+
+                }
+            }
+
+
+        }
+
+        else
+        {
+            fishingInfoText.SetActive(false);
         }
     }
 
     IEnumerator DelayReset()
     {
         //Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-        //Debug.DrawRay(ray.origin, (Vector3.forward) * range, Color.red);
-        Debug.DrawRay(new Vector3(transform.localPosition.x, transform.localPosition.y - 2, transform.localPosition.z), (Vector3.forward) * range, Color.red);
-        //Debug.DrawRay(new Vector3(hands.transform.position.x, hands.transform.position.y - 2, hands.transform.position.z), (Vector3.forward) * range, Color.red);
-        if (Physics.Raycast(new Vector3(transform.position.x, transform.position.y - 2, transform.position.z), Vector3.forward, range, fishLayer))
+        RaycastHit hit;
+        //Debug.DrawRay(ray.origin, new Vector3(1, 1, 1) * range, Color.red);
+        //Debug.DrawRay(new Vector3(GM.cam.transform.position.x, GM.cam.transform.position.y - 2, GM.cam.transform.position.z), new Vector3 (1,1,1) * range, Color.red);
+        Debug.DrawRay(new Vector3(hands.transform.position.x, hands.transform.position.y - 1.5f, hands.transform.position.z), (transform.forward) * range, Color.red);
+        if (Physics.Raycast(new Vector3(hands.transform.position.x, hands.transform.position.y - 1.5f, hands.transform.position.z), (transform.forward), out hit, range, fishLayer))
         {
-            Debug.Log("fish caught");
-            //deactivate that fish
-            //GM.FishingOutcome(range); but change the range 11 bit in the fn
+            
+            if (hit.collider.gameObject.tag == "fish")
+            {
+                Debug.Log("fish caught");
+                hitFish = true;
+                hit.collider.gameObject.SetActive(false);
+                //deactivate that fish
+                
+            }
+            else
+            {
+                Debug.Log("no fish caught");
+                
+            }
+
+
+            
+        }
+
+        yield return new WaitForSeconds(1f);
+        if (hitFish)
+        {
+            fishingInfo.text = "Fish caught! Time to reel it in (hold spacebar)";
+            canReel = true;
+            
         }
 
         else
         {
-            Debug.Log("no fish caught");
+            fishingInfo.text = "No luck! Try again!";
         }
-
-        yield return new WaitForSeconds(1f);
         reelSlider.value = 0;
     }
 
-    void CastLine()
-    {
-        //Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-        Debug.DrawRay(new Vector3(transform.localPosition.x, transform.localPosition.y - 2, transform.localPosition.z), Vector3.forward * range, Color.red); 
-        //instantiate trigger at raycast position (distance of range)
-        reelSlider.value = 0;
-    }
+   
+
 }

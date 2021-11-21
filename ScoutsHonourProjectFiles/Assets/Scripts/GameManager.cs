@@ -210,6 +210,21 @@ public class GameManager : MonoBehaviour
 
     public float energyDecrease;
 
+    bool firstAloe;
+    bool firstGinger;
+    bool firstApple;
+    bool firstPlum;
+    bool firstMango;
+
+    public GameObject newPlantInfo;
+
+    public bool fishInvClicked;
+    public GameObject cookFishPrompt;
+    public bool canCookFish;
+
+
+    //PrefabActivation[] prefabScripts;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -217,6 +232,8 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1;
         gamePaused = false;
         energyDecrease = 4;
+
+        //prefabScripts = FindObjectsOfTypeAll<PrefabActivation>();
 
     }
 
@@ -236,7 +253,7 @@ public class GameManager : MonoBehaviour
         foreach (TerrainActivationTriggers terrain in terrainScripts)
         {
             terrain.terrainPiece.SetActive(terrain.inRangeOfTerrain);
-        }
+        }                                                                 ///TERRAIN STUFF NB
 
         /*if (rodActive || gamePaused || axeActive || chemSetOpen)
         {
@@ -247,6 +264,10 @@ public class GameManager : MonoBehaviour
         {
             hands.SetActive(true);
         }*/
+        if (firstAloe && firstApple && firstGinger && firstMango && firstPlum)
+        {
+            ObjectivesCompleted(7);
+        }
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             gamePaused = true;
@@ -814,6 +835,12 @@ public class GameManager : MonoBehaviour
                     //activate fire and particle effect stuff
                     StartCoroutine(ReactivateMouse());
                     //StartCoroutine(FireOut());
+
+                    if (fishCaught)
+                    {
+                        cookFishPrompt.SetActive(true);
+                        canCookFish = true;
+                    }
                     
                 }
             }
@@ -823,9 +850,24 @@ public class GameManager : MonoBehaviour
         {
             setUpLogsPrompt.SetActive(false);
             setUpLogsText.text = "Setup fireplace logs (E)";
+            cookFishPrompt.SetActive(false);
+            canCookFish = false;
         }
 
-        
+     
+
+        if (canCookFish)
+        {
+            if (fishInvClicked) //activate on clicking UI fish prompt to eat
+            {
+                //Activate cooking UI
+                //Timer thing for burnt or not
+                fishCaught = false;
+                fishInventory.SetActive(false);
+                fishInvClicked = false;
+
+            }
+        }
         /// PLAYER HAS RESOURCES UI
         //hasWater.SetActive(waterCollected);
         //hasWood.SetActive(woodCollected);
@@ -935,14 +977,14 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public void FishingOutcome(float range)
+    public void FishingOutcome()
     {
-        if (range > 11)
-        {
-            fishCaught = true;
-            fishInventory.SetActive(true);
-            AddToInventory(0);
-        }
+        
+        fishCaught = true;
+        fishInventory.SetActive(true);
+        AddToInventory(0);
+        ObjectivesCompleted(5);
+        
     }
 
     public void AddToInventory(int index)
@@ -1038,6 +1080,13 @@ public class GameManager : MonoBehaviour
         aloeCollected = true;
         AddToInventory(8);
 
+        if (!firstAloe)
+        {
+            newPlantInfo.SetActive(true);
+            firstAloe = true;
+            StartCoroutine(DeactivateNewInfo());
+        }
+
         //UI text saying new plant found! or aloe collected
     }
 
@@ -1054,7 +1103,12 @@ public class GameManager : MonoBehaviour
         gingerCollected = true;
         AddToInventory(7);
 
-        //UI text display
+        if (!firstGinger)
+        {
+            newPlantInfo.SetActive(true);
+            firstGinger = true;
+            StartCoroutine(DeactivateNewInfo());
+        }
     }
 
     public void CollectWater()  //activated when clicking collect water button
@@ -1096,6 +1150,13 @@ public class GameManager : MonoBehaviour
         {
             ui.SetActive(true);
         }
+
+        if (!firstApple)
+        {
+            newPlantInfo.SetActive(true);
+            firstApple = true;
+            StartCoroutine(DeactivateNewInfo());
+        }
     }
 
     public void CollectPlum()
@@ -1111,6 +1172,13 @@ public class GameManager : MonoBehaviour
         foreach (GameObject ui in journalPlum)
         {
             ui.SetActive(true);
+        }
+
+        if (!firstPlum)
+        {
+            newPlantInfo.SetActive(true);
+            firstPlum = true;
+            StartCoroutine(DeactivateNewInfo());
         }
     }
 
@@ -1128,6 +1196,19 @@ public class GameManager : MonoBehaviour
         {
             ui.SetActive(true);
         }
+
+        if (!firstMango)
+        {
+            newPlantInfo.SetActive(true);
+            firstMango = true;
+            StartCoroutine(DeactivateNewInfo());
+        }
+    }
+
+    IEnumerator DeactivateNewInfo()
+    {
+        yield return new WaitForSeconds(4);
+        newPlantInfo.SetActive(false);
     }
 
     public void CollectWood()  //activated when clicking collect wood button
@@ -1207,14 +1288,29 @@ public class GameManager : MonoBehaviour
                 chemistrySet.SetActive(false);
                 controller.enabled = true;
                 chemSetOpen = false;
+                if (!inventoryOpen)
+            {
+                    Cursor.lockState = CursorLockMode.Locked;
+                    Cursor.visible = false;
+
+                    PM.enabled = true;
+                    ML.enabled = true;
             }
+                
+        }
 
             else
             {
                 chemistrySet.SetActive(true);
                 controller.enabled = false;
                 chemSetOpen = true;
-            }
+
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+
+                PM.enabled = false;
+                ML.enabled = false;
+        }
 
 
         CloseInventory();
