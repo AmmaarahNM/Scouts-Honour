@@ -192,6 +192,8 @@ public class GameManager : MonoBehaviour
 
     public GameObject dangerUI;
     bool barOnZero;
+    public GameObject BagGlow;
+    public bool newItems;
 
     public GameObject poisonedIcon;
     public GameObject burntIcon;
@@ -237,7 +239,7 @@ public class GameManager : MonoBehaviour
 
     }
 
-
+     
     // Update is called once per frame
     void FixedUpdate()
     {
@@ -310,6 +312,7 @@ public class GameManager : MonoBehaviour
         {
             if (axeCollected)
             {
+                
                 if (axeActive)
                 {
                     axe2.SetActive(false);
