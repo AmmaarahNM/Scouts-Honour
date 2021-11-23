@@ -20,6 +20,10 @@ public class FishingGame : MonoBehaviour
     public bool isReeling;
     public bool canReel;
     public bool hitFish;
+
+    public GameObject reelingBar;
+    public Image reelValue;
+    float storedRange;
     // Start is called before the first frame update
     void Start()
     {
@@ -29,39 +33,50 @@ public class FishingGame : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        sliderIcon.SetActive(GM.rodActive);
+        reelingBar.SetActive(canReel);
+        reelValue.fillAmount = (range / storedRange);
+        sliderIcon.SetActive(GM.rodActive && !canReel);
         if (GM.rodActive)
         {
             
             if (Input.GetKey(KeyCode.Mouse0) && !canReel)
             {
-                isCasting = true;             //ONLY IF NO FISH IN INVENTORY - OTHERWISE SAY FISH AREALDY CAUGHT
-                if (isIncreasing)
+                if (!GM.fishCaught)
                 {
-                    if (reelSlider.value < 1)
+                    isCasting = true;             //ONLY IF NO FISH IN INVENTORY - OTHERWISE SAY FISH AREALDY CAUGHT
+                    if (isIncreasing)
                     {
-                        reelSlider.value += Time.deltaTime;
+                        if (reelSlider.value < 1)
+                        {
+                            reelSlider.value += Time.deltaTime;
+                        }
+
+                        else
+                        {
+                            isIncreasing = false;
+                        }
+
                     }
 
                     else
                     {
-                        isIncreasing = false;
+                        if (reelSlider.value > 0)
+                        {
+                            reelSlider.value -= Time.deltaTime;
+                        }
+
+                        else
+                        {
+                            isIncreasing = true;
+                        }
                     }
-                    
                 }
 
                 else
                 {
-                    if (reelSlider.value > 0)
-                    {
-                        reelSlider.value -= Time.deltaTime;
-                    }
-
-                    else
-                    {
-                        isIncreasing = true;
-                    }
+                    GM.StorageFull();
                 }
+                
 
                 
             }
@@ -161,6 +176,7 @@ public class FishingGame : MonoBehaviour
         if (hitFish)
         {
             fishingInfo.text = "Fish caught! Time to reel it in (hold spacebar)";
+            storedRange = range;
             canReel = true;
             
         }

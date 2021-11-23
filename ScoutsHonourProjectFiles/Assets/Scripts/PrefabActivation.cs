@@ -24,7 +24,7 @@ public class PrefabActivation : MonoBehaviour
             child.SetActive(activePrefab);
         }
 
-        if (Vector3.Distance(transform.position, player.transform.position) > 45) //TEST THIS VALUE
+        if (Vector3.Distance(transform.position, player.transform.position) > 55) //TEST THIS VALUE
         {
             activePrefab = false;
             

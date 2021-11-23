@@ -84,8 +84,17 @@ public class GameManager : MonoBehaviour
     public GameObject sticks;
     public GameObject stick;
     public bool fireStarted;
+    
     public GameObject fireBadge;
     public GameObject fireBadgeAchievement;
+    public GameObject floraBadge;
+    public GameObject floraBadgeAchievement;
+    //public GameObject exploreBadge;
+    public GameObject exploreBadgeAchievement;
+    public GameObject fishingBadge;
+    public GameObject fishingBadgeAchievement;
+    public GameObject surviveBadge;
+    public GameObject survivBadgeAchievement;
 
     //Sounds
     public GameObject WaterSound;
@@ -206,6 +215,8 @@ public class GameManager : MonoBehaviour
     public GameObject textBackground;
     public TerrainActivationTriggers[] terrainScripts;
 
+    public bool firstFishCaught;
+
     public GameObject restingUI;
     Vector3 previousPosition;
     Vector3 previousRotation;
@@ -223,7 +234,19 @@ public class GameManager : MonoBehaviour
     public bool fishInvClicked;
     public GameObject cookFishPrompt;
     public bool canCookFish;
+    public GameObject rawFishPrompt;
+    float cookingTime;
+    public GameObject rawFishDangerInfo;
+    bool isEatingFish;
+    bool fishReady;
+    bool fishCooking;
+    public GameObject eatingFishUI;
+    public GameObject eatCookedFishPrompt;
+    public GameObject burntFishUI;
 
+    public GameObject rawFishAnim;
+    public GameObject cookedFishAnim;
+    public GameObject burntFishAnim;
 
     //PrefabActivation[] prefabScripts;
 
@@ -280,7 +303,7 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.I) && !journalOpen)
         {
             inventoryOpen = true;
-
+            BagGlow.SetActive(false);
             ActivateInventory();
 
         }
@@ -387,6 +410,11 @@ public class GameManager : MonoBehaviour
             //set bool false once amountFed has reached desired value;
         }
 
+        if (isEatingFish && fed < 100)
+        {
+            fed += 8 * Time.deltaTime;
+        }
+
         if (isEatingMango || isBurning)
         {
             health -= 3*Time.deltaTime;
@@ -401,7 +429,7 @@ public class GameManager : MonoBehaviour
         if (isHealing)
         {
             if (health < 100)
-            health += 5 * Time.deltaTime;
+            health += 10 * Time.deltaTime;
         }
 
         healthBar.fillAmount = health / 100;
@@ -857,29 +885,116 @@ public class GameManager : MonoBehaviour
             canCookFish = false;
         }
 
-     
-
-        if (canCookFish)
+        if (fishCooking)
         {
-            if (fishInvClicked) //activate on clicking UI fish prompt to eat
-            {
-                //Activate cooking UI
-                //Timer thing for burnt or not
-                fishCaught = false;
-                fishInventory.SetActive(false);
-                fishInvClicked = false;
+            cookingTime += Time.deltaTime;
 
+            if (cookingTime <= 7)
+            {
+                rawFishAnim.SetActive(true);
+                cookedFishAnim.SetActive(false);
+                burntFishAnim.SetActive(false);
+            }
+
+            else if (cookingTime > 7 && cookingTime <= 12)
+            {
+                rawFishAnim.SetActive(false);
+                fishReady = true;
+                cookedFishAnim.SetActive(true);
+                burntFishAnim.SetActive(false);
+                eatCookedFishPrompt.SetActive(true);
+            }
+
+            else
+            {
+                rawFishAnim.SetActive(false);
+                cookedFishAnim.SetActive(false);
+                burntFishAnim.SetActive(true);
+                eatCookedFishPrompt.SetActive(false);
+                burntFishUI.SetActive(true);
+                fishCooking = false;
+                fishReady = false;
+                StartCoroutine(DeactivateBurntFish());
             }
         }
+
+        else
+        {
+            rawFishAnim.SetActive(false);
+            cookedFishAnim.SetActive(false);
+            burntFishAnim.SetActive(false);
+            eatCookedFishPrompt.SetActive(false);
+            cookingTime = 0;
+        }
+
+     
+
+        
         /// PLAYER HAS RESOURCES UI
         //hasWater.SetActive(waterCollected);
         //hasWood.SetActive(woodCollected);
         //hasFish.SetActive(fishCaught);
+        if (Input.GetKeyDown(KeyCode.E) && fishReady)
+        {
+            EatCookedFish();
+        }
+
+        
 
         waterInventory.SetActive(waterCollected);
         woodInventory.SetActive(woodCollected);
         fishInventory.SetActive(fishCaught);
 
+    }
+
+    IEnumerator DeactivateBurntFish()
+    {
+        yield return new WaitForSeconds(2);
+        burntFishAnim.SetActive(false);
+        burntFishUI.SetActive(false);
+    }
+
+    public void EatCookedFish()
+    {
+        fishCooking = false;
+        fishReady = false;
+
+        eatApplePrompt.SetActive(false);
+        isEatingFish = true;
+        eatingFishUI.SetActive(true);
+        CloseInventory();
+        controller.enabled = false;
+        
+        //eating sound
+        StartCoroutine(StopEatingFish());
+
+    }
+
+    IEnumerator StopEatingFish()
+    {
+        yield return new WaitForSeconds(2);
+        isEatingFish = false;
+        controller.enabled = true;
+        eatingFishUI.SetActive(false);
+    }
+    public void FishInventoryClicked()
+    {
+        if (canCookFish)
+        {
+            //Activate cooking UI
+            //Timer thing for burnt or not
+            CloseInventory();
+            fishCaught = false;
+            fishInventory.SetActive(false);
+            fishInvClicked = false;
+            fishCooking = true;
+            canCookFish = false;
+        }
+
+        else
+        {
+            rawFishPrompt.SetActive(true);
+        }
     }
 
     public void RestFunction()
@@ -910,6 +1025,7 @@ public class GameManager : MonoBehaviour
 
     IEnumerator ReactivateMouse()
     {
+        //fireBadgeAchievement.SetActive(true);
         yield return new WaitForSeconds(3);
         fireBadgeAchievement.SetActive(false);
         Cursor.lockState = CursorLockMode.Locked;
@@ -942,7 +1058,7 @@ public class GameManager : MonoBehaviour
     }
     public void Exploration()
     {
-        pointsExplored++;
+        pointsExplored+=2;
         if (pointsExplored < 10)
         {
             exploredArea.text = pointsExplored.ToString() + "0%";
@@ -952,6 +1068,7 @@ public class GameManager : MonoBehaviour
         {
             exploredArea.enabled = false;
             exploreBadge.SetActive(true);
+            exploreBadgeAchievement.SetActive(true);
             //badge unlocked UI
         }
         
@@ -987,12 +1104,20 @@ public class GameManager : MonoBehaviour
         fishInventory.SetActive(true);
         AddToInventory(0);
         ObjectivesCompleted(5);
+        if (!firstFishCaught)
+        {
+            firstFishCaught = true;
+            fishingBadge.SetActive(true);
+            fishingBadgeAchievement.SetActive(true);
+        }
         
     }
+
 
     public void AddToInventory(int index)
     {
         //set image source to index
+        BagGlow.SetActive(true);
         addingIcon.sprite = addingImages[index];
         movingToBag.SetActive(true);
         textBackground.SetActive(true);
@@ -1210,8 +1335,14 @@ public class GameManager : MonoBehaviour
 
     IEnumerator DeactivateNewInfo()
     {
+        if (firstAloe && firstGinger && firstMango && firstPlum && firstApple)
+        {
+            floraBadge.SetActive(true);
+            floraBadgeAchievement.SetActive(true);
+        }
         yield return new WaitForSeconds(4);
         newPlantInfo.SetActive(false);
+        //floraBadgeAchievement.SetActive(false);
     }
 
     public void CollectWood()  //activated when clicking collect wood button
@@ -1501,6 +1632,35 @@ public class GameManager : MonoBehaviour
 
         
 
+    }
+
+    public void EatRawFish()
+    {
+        rawFishPrompt.SetActive(false);
+        CloseInventory();
+        isEatingMango = true;
+        controller.enabled = false;
+        eatingFishUI.SetActive(true);
+        fishCaught = false;
+        fishInventory.SetActive(false);
+        fishInvClicked = false;
+        StartCoroutine(StopEatingRawFish());
+
+    }
+
+    IEnumerator StopEatingRawFish()
+    {
+        yield return new WaitForSeconds(1);
+        isEatingMango = false;
+        controller.enabled = true;
+        eatingFishUI.SetActive(false);
+        rawFishDangerInfo.SetActive(true);
+        isPoisoned = true;
+        dangerUI.SetActive(true);
+
+        yield return new WaitForSeconds(3);
+        rawFishDangerInfo.SetActive(false);
+        dangerUI.SetActive(false);
     }
 
     IEnumerator StopEatingMango()
