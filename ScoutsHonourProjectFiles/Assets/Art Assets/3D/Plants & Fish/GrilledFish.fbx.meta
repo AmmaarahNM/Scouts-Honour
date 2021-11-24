@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 383ef7eead70f75449e0053f2826d606
+guid: f04941af26b8297478d5b49ec96ed504
 ModelImporter:
   serializedVersion: 21100
   internalIDToNameTable: []
@@ -7,18 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Red-Fish
-    second: {fileID: 2100000, guid: da24ea65cd6812f419c240f6bc73b622, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Red-Fish.Eyes
-    second: {fileID: 2100000, guid: 004251ebfc0e7a84188eea8b94d7718a, type: 2}
-  - first:
-      type: UnityEngine:Texture2D
-      assembly: UnityEngine.CoreModule
-      name: RedFish
-    second: {fileID: 2800000, guid: 322d48da72d75b144bbb5f4bba084f20, type: 3}
+      name: Grilled-Fish
+    second: {fileID: 2100000, guid: 2879ba5b846c2df4f94fc445e496774a, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -28,7 +18,7 @@ ModelImporter:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
     resampleCurves: 1
-    optimizeGameObjects: 1
+    optimizeGameObjects: 0
     motionNodeName: 
     rigImportErrors: 
     rigImportWarnings: 
@@ -66,9 +56,9 @@ ModelImporter:
     weldVertices: 1
     bakeAxisConversion: 0
     preserveHierarchy: 0
-    skinWeightsMode: 1
-    maxBonesPerVertex: 1
-    minBoneWeight: 0.058
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
@@ -109,7 +99,7 @@ ModelImporter:
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1
-  avatarSetup: 1
+  avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
   additionalBone: 0
   userData: 
