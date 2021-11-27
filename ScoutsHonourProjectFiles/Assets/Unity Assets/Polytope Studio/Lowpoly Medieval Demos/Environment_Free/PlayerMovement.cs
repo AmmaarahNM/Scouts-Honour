@@ -122,12 +122,7 @@ public class PlayerMovement : MonoBehaviour
             GM.collectGingerEnabled = true;
         }
 
-        if (other.gameObject.tag == "ExplorePoint")
-        {
-            Debug.Log("More area seen");
-            GM.Exploration();
-            Destroy(other);
-        }
+        
 
         if (other.gameObject.tag == "Axe")
         {

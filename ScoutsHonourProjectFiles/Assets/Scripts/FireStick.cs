@@ -23,6 +23,10 @@ public class FireStick : MonoBehaviour
         {
             GM.fireStarted = true;
             GM.ObjectivesCompleted(2);
+            GM.fireBadge.SetActive(true);
+            GM.noFireBadge.SetActive(false);
+            GM.fireEndBadge.SetActive(true);
+            GM.fireBadgeAchievement.SetActive(true);
         }
         Debug.Log(stickRB.velocity.y * 10e6);
     }

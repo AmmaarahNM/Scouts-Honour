@@ -89,12 +89,23 @@ public class GameManager : MonoBehaviour
     public GameObject fireBadgeAchievement;
     public GameObject floraBadge;
     public GameObject floraBadgeAchievement;
-    //public GameObject exploreBadge;
-    public GameObject exploreBadgeAchievement;
+    public GameObject birdBadge;
+    public GameObject birdBadgeAchievement;
     public GameObject fishingBadge;
     public GameObject fishingBadgeAchievement;
-    public GameObject surviveBadge;
-    public GameObject survivBadgeAchievement;
+    public GameObject objectivesBadge;
+    public GameObject objectivesBadgeAchievement;
+    public GameObject toolsBadge;
+    public GameObject toolsBadgeAchievement;
+
+    public GameObject noFireBadge;
+    public GameObject noFloraBadge;
+    public GameObject noBirdBadge;
+    public GameObject noFishBadge;
+    public GameObject noObjectivesBadge;
+    public GameObject noToolsBadge;
+
+    public int birdsFound;
 
     //Sounds
     public GameObject WaterSound;
@@ -118,9 +129,9 @@ public class GameManager : MonoBehaviour
     public GameObject gingerInventory;
     bool gingerCollected;
 
-    public int pointsExplored;
+    /*public int pointsExplored;
     public GameObject exploreBadge;
-    public Text exploredArea;
+    public Text exploredArea;*/
 
     public bool gamePaused;
     public GameObject escapeTab;
@@ -248,6 +259,21 @@ public class GameManager : MonoBehaviour
     public GameObject cookedFishAnim;
     public GameObject burntFishAnim;
 
+    public bool binocsActive;
+    public GameObject binocUI;
+    public Text birdName;
+    public GameObject newBirdInfo;
+
+    int objectivesTicked;
+    public GameObject lostUI;
+    public GameObject badgesEnd;
+    public GameObject objectivesEndBadge;
+    public GameObject floraEndBadge;
+    public GameObject fishEndBadge;
+    public GameObject fireEndBadge;
+    public GameObject birdEndBadge;
+
+    public GameObject winUI;
     //PrefabActivation[] prefabScripts;
 
     // Start is called before the first frame update
@@ -275,10 +301,11 @@ public class GameManager : MonoBehaviour
         burntIcon.SetActive(isBurnt);
 
         
-        foreach (TerrainActivationTriggers terrain in terrainScripts)
+        
+       /* foreach (TerrainActivationTriggers terrain in terrainScripts)
         {
             terrain.terrainPiece.SetActive(terrain.inRangeOfTerrain);
-        }                                                                 ///TERRAIN STUFF NB
+        }       */                                                          ///TERRAIN STUFF NB
 
         /*if (rodActive || gamePaused || axeActive || chemSetOpen)
         {
@@ -306,6 +333,23 @@ public class GameManager : MonoBehaviour
             BagGlow.SetActive(false);
             ActivateInventory();
 
+        }
+
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            if (binocsActive)
+            {
+                binocsActive = false;
+                binocUI.SetActive(false);
+                cam.fieldOfView = 60;
+            }
+
+            else
+            {
+                binocsActive = true;
+                binocUI.SetActive(true);
+                cam.fieldOfView = 30;
+            }
         }
 
         //journal.SetActive(journalOpen);
@@ -434,6 +478,11 @@ public class GameManager : MonoBehaviour
 
         healthBar.fillAmount = health / 100;
 
+        if (health <= 0.8)
+        {
+            LoseCondition();
+        }
+
 
         if (isDrinking && hydrated < 100)
         {
@@ -525,7 +574,7 @@ public class GameManager : MonoBehaviour
             HealthWarning.SetActive(true);
             if (health > 0.1)
             {
-                health -= Time.deltaTime / 4;
+                health -= Time.deltaTime ;
             }
 
             else
@@ -945,6 +994,8 @@ public class GameManager : MonoBehaviour
         woodInventory.SetActive(woodCollected);
         fishInventory.SetActive(fishCaught);
 
+        
+
     }
 
     IEnumerator DeactivateBurntFish()
@@ -1056,23 +1107,7 @@ public class GameManager : MonoBehaviour
         journalOpen = false;
         journal.SetActive(false);
     }
-    public void Exploration()
-    {
-        pointsExplored+=2;
-        if (pointsExplored < 10)
-        {
-            exploredArea.text = pointsExplored.ToString() + "0%";
-        }
-
-        else
-        {
-            exploredArea.enabled = false;
-            exploreBadge.SetActive(true);
-            exploreBadgeAchievement.SetActive(true);
-            //badge unlocked UI
-        }
-        
-    }
+    
     void ActivateInventory()
     {
         if (inventoryOpen)
@@ -1108,6 +1143,8 @@ public class GameManager : MonoBehaviour
         {
             firstFishCaught = true;
             fishingBadge.SetActive(true);
+            fishEndBadge.SetActive(true);
+            noFishBadge.SetActive(false);
             fishingBadgeAchievement.SetActive(true);
         }
         
@@ -1333,15 +1370,18 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    IEnumerator DeactivateNewInfo()
+    public IEnumerator DeactivateNewInfo()
     {
         if (firstAloe && firstGinger && firstMango && firstPlum && firstApple)
         {
             floraBadge.SetActive(true);
+            noFloraBadge.SetActive(false);
+            floraEndBadge.SetActive(true);
             floraBadgeAchievement.SetActive(true);
         }
         yield return new WaitForSeconds(4);
         newPlantInfo.SetActive(false);
+        
         //floraBadgeAchievement.SetActive(false);
     }
 
@@ -1501,6 +1541,23 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void ActivateBinocs()
+    {
+        if (binocsActive)
+        {
+            binocsActive = false;
+            binocUI.SetActive(false);
+        }
+
+        else
+        {
+            binocsActive = true;
+            binocUI.SetActive(true);
+        }
+
+        CloseInventory();
+    }
+
     public void ObjectivesCompleted(int number)
     {
         if (!firstTime[number])
@@ -1508,6 +1565,16 @@ public class GameManager : MonoBehaviour
             //UI or audio for objective complete
             firstTime[number] = true;
             completeObjectiveTick[number].SetActive(true);
+            objectivesTicked++;
+
+            if (objectivesTicked >= 9)
+            {
+                objectivesBadge.SetActive(true);
+                noObjectivesBadge.SetActive(false);
+                objectivesEndBadge.SetActive(true);
+                //objectivesBadgeAchievement.SetActive(true);
+                WinCondition();
+            }
         }
 
         
@@ -1696,5 +1763,21 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(3);
         isBurningInfo.SetActive(false);
         dangerUI.SetActive(false);
+    }
+
+    public void LoseCondition()
+    {
+        gamePaused = true;
+        Time.timeScale = 0;
+        lostUI.SetActive(true);
+        badgesEnd.SetActive(true);
+    }
+
+    public void WinCondition()
+    {
+        gamePaused = true;
+        Time.timeScale = 0;
+        winUI.SetActive(true);
+        badgesEnd.SetActive(true);
     }
 }
