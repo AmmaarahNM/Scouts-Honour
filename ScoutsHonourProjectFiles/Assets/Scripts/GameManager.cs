@@ -274,6 +274,8 @@ public class GameManager : MonoBehaviour
     public GameObject birdEndBadge;
 
     public GameObject winUI;
+
+    public bool purified;
     //PrefabActivation[] prefabScripts;
 
     // Start is called before the first frame update
@@ -332,6 +334,21 @@ public class GameManager : MonoBehaviour
             inventoryOpen = true;
             BagGlow.SetActive(false);
             ActivateInventory();
+
+        }
+
+        if (binocsActive)
+        {
+            if (Input.GetAxis("Mouse ScrollWheel") > 0 && cam.fieldOfView > 20)
+            {
+                cam.fieldOfView--;
+            }
+
+            if (Input.GetAxis("Mouse ScrollWheel") < 0 && cam.fieldOfView < 70)
+            {
+                cam.fieldOfView++;
+            }
+
 
         }
 
@@ -1046,6 +1063,11 @@ public class GameManager : MonoBehaviour
         {
             rawFishPrompt.SetActive(true);
         }
+    }
+
+    public void WaterPurified()
+    {
+
     }
 
     public void RestFunction()
