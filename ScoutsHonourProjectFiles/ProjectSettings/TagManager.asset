@@ -22,6 +22,10 @@ TagManager:
   - fire
   - Log
   - fish
+  - lb_bird
+  - lb_groundTarget
+  - lb_perchTarget
+  - Nest
   layers:
   - Default
   - TransparentFX

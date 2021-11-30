@@ -223,7 +223,7 @@ public class GameManager : MonoBehaviour
     public GameObject unequipAxePrompt;
     public GameObject packChemSetPrompt;
     public GameObject closeJournalPrompt;
-    public GameObject textBackground;
+    //public GameObject textBackground;
     public TerrainActivationTriggers[] terrainScripts;
 
     public bool firstFishCaught;
@@ -1179,7 +1179,7 @@ public class GameManager : MonoBehaviour
         BagGlow.SetActive(true);
         addingIcon.sprite = addingImages[index];
         movingToBag.SetActive(true);
-        textBackground.SetActive(true);
+        //textBackground.SetActive(true);
 
         switch (index)
         {
@@ -1244,7 +1244,7 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(3);
         bagUpdates.text = " ";
-        textBackground.SetActive(false);
+        //textBackground.SetActive(false);
     }
 
     public void CloseInventory()
