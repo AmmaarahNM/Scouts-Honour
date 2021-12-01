@@ -24,8 +24,11 @@ public class PlayerMovement : MonoBehaviour
     float defaultYPos;
     float timer;
 
-    public AudioSource walkingLand;
-    public AudioSource walkingWater;
+    public GameObject walkingLand;
+    public GameObject walkingWater;
+
+    public GameObject walkingLandFast;
+    
 
     private void Start()
     {
@@ -63,15 +66,40 @@ public class PlayerMovement : MonoBehaviour
 
         controller.Move(move * speed * Time.deltaTime);
         
-        if (Input.GetAxis("Horizontal") > 0.1 || Input.GetAxis("Vertical") > 0.1)
+        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.D) ||
+            Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow))
         {
-            walkingLand.Play();
-            Debug.Log("iswalking");
+            if (GM.collectWaterEnabled)
+            {
+                walkingWater.SetActive(true);
+                walkingLandFast.SetActive(false);
+                walkingLand.SetActive(false);
+            }
+
+            else
+            {
+                walkingWater.SetActive(false);
+                if (speed < 5)
+                {
+                    walkingLand.SetActive(true);
+                    walkingLandFast.SetActive(false);
+                }
+
+                else
+                {
+                    walkingLand.SetActive(false);
+                    walkingLandFast.SetActive(true);
+                }
+            }
+            
+            
         }
 
-        else
+        if (move.x == 0 && move.z == 0)
         {
-            walkingLand.Stop();
+            walkingLand.SetActive(false);
+            walkingLandFast.SetActive(false);
+            walkingWater.SetActive(false);
         }
         /*if (Input.GetButtonDown("Jump") && isGrounded)
         {
@@ -105,6 +133,7 @@ public class PlayerMovement : MonoBehaviour
         if (other.gameObject.tag == "Nest")
         {
             GM.nestSeen = true;
+            GM.ObjectivesCompleted(8);
         }
 
         if (other.gameObject.tag == "Log")

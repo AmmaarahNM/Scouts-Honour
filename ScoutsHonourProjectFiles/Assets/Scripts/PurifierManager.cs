@@ -70,9 +70,9 @@ public class PurifierManager : MonoBehaviour
                 level.enabled = false;
             }
 
-            vialOneReady = false;
-            vialTwoReady = false;
-            vialThreeReady = false;
+            //vialOneReady = false;
+            //vialTwoReady = false;
+            //vialThreeReady = false;
         }
         
     }
@@ -101,7 +101,7 @@ public class PurifierManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (vialOne[0].material == vialOne[1].material) // && vialOne[2].enabled == false)
+        if (vialOne[0].material.color == vialOne[1].material.color) // && vialOne[2].enabled == false)
         {
             vialOneReady = true;
         }
@@ -111,7 +111,7 @@ public class PurifierManager : MonoBehaviour
             vialOneReady = false;
         }
 
-        if (vialTwo[0].material == vialTwo[1].material) // && vialTwo[2].enabled == false)
+        if (vialTwo[0].material.color == vialTwo[1].material.color) // && vialTwo[2].enabled == false)
         {
             vialTwoReady = true;
         }
@@ -121,7 +121,7 @@ public class PurifierManager : MonoBehaviour
             vialTwoReady = false;
         }
 
-        if (vialThree[0].material == vialThree[1].material) // && vialThree[2].enabled == false)
+        if (vialThree[0].material.color == vialThree[1].material.color) // && vialThree[2].enabled == false)
         {
             vialThreeReady = true;
         }
@@ -130,6 +130,38 @@ public class PurifierManager : MonoBehaviour
         {
             vialThreeReady = false;
         }
+
+        /*if ((vialOne[0].material == brown && vialOne[1].material == brown) || (vialOne[0].material == blue && vialOne[1].material == blue) || 
+            (vialOne[0].material == green && vialOne[1].material == green))
+        {
+            vialOneReady = true;
+        }
+
+        else
+        {
+            vialOneReady = false;
+        }
+
+        if ((vialTwo[0].material == brown && vialTwo[1].material == brown) || (vialTwo[0].material == blue && vialTwo[1].material == blue) ||
+            (vialTwo[0].material == green && vialTwo[1].material == green))
+        {
+            vialTwoReady = true;
+        }
+        else
+        {
+            vialTwoReady = false;
+        }
+
+        if ((vialThree[0].material == brown && vialThree[1].material == brown) || (vialThree[0].material == blue && vialThree[1].material == blue) ||
+            (vialThree[0].material == green && vialThree[1].material == green))
+        {
+            vialThreeReady = true;
+        }
+
+        else
+        {
+            vialThreeReady = false;
+        }*/
 
         if (vialOneReady && vialTwoReady && vialThreeReady)
         {
@@ -144,8 +176,8 @@ public class PurifierManager : MonoBehaviour
             {
                 oneRaised = true;
                 Debug.Log("1 is up");
-                handsAnim.Play("HandTestTube1-Up");
-                vialAnim.Play("TestTube1-Up");
+                handsAnim.Play("HandTestTube3-Up");
+                vialAnim.Play("TestTube3-Up");
                 //VIAL ONE UP ANIMATION
             }
 
@@ -160,8 +192,8 @@ public class PurifierManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
                 threeRaised = true;
-                handsAnim.Play("HandTestTube3-Up");
-                vialAnim.Play("TestTube3-Up");
+                handsAnim.Play("HandTestTube1-Up");
+                vialAnim.Play("TestTube1-Up");
                 //VIAL THREE UP ANIMATION
             }
 
@@ -173,8 +205,8 @@ public class PurifierManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Alpha3))
             {
                 oneRaised = false;
-                handsAnim.Play("HandTestTube1-Down");
-                vialAnim.Play("TestTube1-Down");
+                handsAnim.Play("HandTestTube3 -Down");
+                vialAnim.Play("TestTube3-Down");
                 //VIAL ONE DOWN ANIMATION
             }
 
@@ -182,16 +214,16 @@ public class PurifierManager : MonoBehaviour
             {
                 Debug.Log("one to two");
                 OneToTwo();
-                handsAnim.Play("HandTestTube1-PourTo2");
-                vialAnim.Play("TestTube1-PourTo2");
+                handsAnim.Play("HandTestTube3-PourTo2");
+                vialAnim.Play("TestTube3-PourTo2");
                 //ONE OVER TWO ANIMATION
             }
 
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
                 OneToThree();
-                handsAnim.Play("HandTestTube1-PourTo3");
-                vialAnim.Play("TestTube1-PourTo3");
+                handsAnim.Play("HandTestTube3-PourTo1");
+                vialAnim.Play("TestTube3-PourTo1");
                 //ONE OVER THREE ANIMATION
             }
         }
@@ -201,8 +233,8 @@ public class PurifierManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Alpha3))
             {
                 TwoToOne();
-                handsAnim.Play("HandTestTube2-PourTo1");
-                vialAnim.Play("TestTube2-PourTo1");
+                handsAnim.Play("HandTestTube2-PourTo3");
+                vialAnim.Play("TestTube2-PourTo3");
                 //TWO OVER ONE ANIMATION
             }
 
@@ -217,8 +249,8 @@ public class PurifierManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
                 TwoToThree();
-                handsAnim.Play("HandTestTube2-PourTo3");
-                vialAnim.Play("TestTube2-PourTo3");
+                handsAnim.Play("HandTestTube2-PourTo1");
+                vialAnim.Play("TestTube2-PourTo1");
                 //TWO OVER THREE ANIMATION
             }
         }
@@ -228,24 +260,24 @@ public class PurifierManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Alpha3))
             {
                 ThreeToOne();
-                handsAnim.Play("HandTestTube3-PourTo1");
-                vialAnim.Play("TestTube3-PourTo1");
+                handsAnim.Play("HandTestTube1-PourTo3");
+                vialAnim.Play("TestTube1-PourTo3");
                 //THREE OVER ONE ANIMATION
             }
 
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
                 ThreeToTwo();
-                handsAnim.Play("HandTestTube3-PourTo2");
-                vialAnim.Play("TestTube3-PourTo2");
+                handsAnim.Play("HandTestTube1-PourTo2");
+                vialAnim.Play("TestTube1-PourTo2");
                 //THREE OVER TWO ANIMATION
             }
 
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
                 threeRaised = false;
-                handsAnim.Play("HandTestTube3-Down");
-                vialAnim.Play("TestTube3-Down");
+                handsAnim.Play("HandTestTube1-Down");
+                vialAnim.Play("TestTube1-Down");
                 //VIAL THREE DOWN ANIMATION
             }
         }

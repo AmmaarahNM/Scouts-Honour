@@ -22,7 +22,7 @@ public class FireStick : MonoBehaviour
         if (stickRB.velocity.y *10e14 > 4 || stickRB.velocity.y *10e14 < -4)
         {
             GM.fireStarted = true;
-            GM.ObjectivesCompleted(2);
+            GM.ObjectivesCompleted(3);
             GM.fireBadge.SetActive(true);
             GM.noFireBadge.SetActive(false);
             GM.fireEndBadge.SetActive(true);
