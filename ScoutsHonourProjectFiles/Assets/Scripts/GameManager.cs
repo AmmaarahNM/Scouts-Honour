@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
     bool isEatingMango;
     public GameObject mangoDangerInfo;
 
-    bool waterCollected;
+    public bool waterCollected;
     bool woodCollected;
     public bool fishCaught;
 
@@ -276,6 +276,21 @@ public class GameManager : MonoBehaviour
     public GameObject winUI;
 
     public bool purified;
+    public PurifierManager Purif;
+    public GameObject chemInfo;
+
+    public GameObject drinkingWaterUI;
+    public GameObject dirtyWaterDangerInfo;
+    public GameObject dirtyWaterPrompt;
+    public GameObject cleanWaterPrompt;
+
+    public GameObject dirtyWater;
+    public GameObject cleanWater;
+    public bool nestSeen;
+
+    public GameObject collectEggsPrompt;
+    public GameObject noToEggs;
+    public GameObject startLetter;
     //PrefabActivation[] prefabScripts;
 
     // Start is called before the first frame update
@@ -283,11 +298,18 @@ public class GameManager : MonoBehaviour
     {
         mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Time.timeScale = 1;
-        gamePaused = false;
+        gamePaused = true;
+        startLetter.SetActive(true);
         energyDecrease = 4;
 
         //prefabScripts = FindObjectsOfTypeAll<PrefabActivation>();
 
+    }
+
+    public void BeginGame()
+    {
+        gamePaused = false;
+        startLetter.SetActive(false);
     }
 
      
@@ -302,7 +324,7 @@ public class GameManager : MonoBehaviour
         poisonedIcon.SetActive(isPoisoned);
         burntIcon.SetActive(isBurnt);
 
-        
+        chemInfo.SetActive(chemSetOpen);
         
        /* foreach (TerrainActivationTriggers terrain in terrainScripts)
         {
@@ -344,7 +366,7 @@ public class GameManager : MonoBehaviour
                 cam.fieldOfView--;
             }
 
-            if (Input.GetAxis("Mouse ScrollWheel") < 0 && cam.fieldOfView < 70)
+            if (Input.GetAxis("Mouse ScrollWheel") < 0 && cam.fieldOfView < 55)
             {
                 cam.fieldOfView++;
             }
@@ -365,7 +387,7 @@ public class GameManager : MonoBehaviour
             {
                 binocsActive = true;
                 binocUI.SetActive(true);
-                cam.fieldOfView = 30;
+                cam.fieldOfView = 40;
             }
         }
 
@@ -503,7 +525,7 @@ public class GameManager : MonoBehaviour
 
         if (isDrinking && hydrated < 100)
         {
-            hydrated += 2 * Time.deltaTime;
+            hydrated += 20 * Time.deltaTime;
 
             //amountDrank += 2 * Time.deltaTime;
             //set bool false once amountDrank has reached desired value;
@@ -511,7 +533,7 @@ public class GameManager : MonoBehaviour
 
         if (isResting && energy < 100)
         {
-            energy += 4 * Time.deltaTime;
+            energy += 5 * Time.deltaTime;
 
             //amountRested += 2 * Time.deltaTime;
             //set bool false once amountRested has reached desired value;
@@ -610,7 +632,19 @@ public class GameManager : MonoBehaviour
 
         ///TRIGGER COLLECTING STUFF
         ///
+        if (nestSeen)
+        {
+            collectEggsPrompt.SetActive(true);
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                noToEggs.SetActive(true);
+            }
+        }
 
+        else
+        {
+            collectEggsPrompt.SetActive(false);
+        }
         if (collectAloeEnabled)
         {
             collectAloePrompt.SetActive(true);
@@ -931,6 +965,7 @@ public class GameManager : MonoBehaviour
                     //fireBadgeAchievement.SetActive(true);
                     //activate fire and particle effect stuff
                     StartCoroutine(ReactivateMouse());
+                    
                     //StartCoroutine(FireOut());
 
                     if (fishCaught)
@@ -1067,9 +1102,64 @@ public class GameManager : MonoBehaviour
 
     public void WaterPurified()
     {
-
+        Debug.Log("Water purified");
+        dirtyWater.SetActive(false);
+        cleanWater.SetActive(true);
+        //prompt saying water is purified
+        purified = true;
     }
 
+    public void DrinkDirtyWater()
+    {
+        waterCollected = false;
+        dirtyWaterPrompt.SetActive(false);
+        CloseInventory();
+        isEatingMango = true;
+        controller.enabled = false;
+        drinkingWaterUI.SetActive(true);
+        waterInventory.SetActive(false);
+        StartCoroutine(StopDrinkingDirty());
+    }
+
+    IEnumerator StopDrinkingDirty()
+    {
+        yield return new WaitForSeconds(1);
+        isEatingMango = false;
+        controller.enabled = true;
+        drinkingWaterUI.SetActive(false);
+        dirtyWaterDangerInfo.SetActive(true);
+        isPoisoned = true;
+        dangerUI.SetActive(true);
+
+        yield return new WaitForSeconds(3);
+        dirtyWaterDangerInfo.SetActive(false);
+        dangerUI.SetActive(false);
+    }
+
+    public void DrinkCleanWater()
+    {
+        waterCollected = false;
+        
+        cleanWaterPrompt.SetActive(false);
+        CloseInventory();
+        isDrinking = true;
+        controller.enabled = false;
+        drinkingWaterUI.SetActive(true);
+        waterInventory.SetActive(false);
+        Purif.vialOneReady = false;
+        Purif.vialThreeReady = false;
+        Purif.vialTwoReady = false;
+        purified = false;
+        StartCoroutine(StopDrinking());
+    }
+
+    IEnumerator StopDrinking()
+    {
+        yield return new WaitForSeconds(2);
+        isDrinking = false;
+        controller.enabled = true;
+        drinkingWaterUI.SetActive(false);
+    }
     public void RestFunction()
     {
         isResting = true;
@@ -1101,10 +1191,14 @@ public class GameManager : MonoBehaviour
         //fireBadgeAchievement.SetActive(true);
         yield return new WaitForSeconds(3);
         fireBadgeAchievement.SetActive(false);
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        PM.enabled = true;
-        ML.enabled = true;
+        if (!inventoryOpen)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            PM.enabled = true;
+            ML.enabled = true;
+        }
+        
     }
 
     IEnumerator FireOut()
@@ -1315,6 +1409,9 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(4);
         //update water collected amount
         waterCollected = true; //need this to activate treat water task
+        dirtyWater.SetActive(true);
+        cleanWater.SetActive(false);
+        Purif.StartPurification();
         AddToInventory(6);
         collectingWater.SetActive(false);  //deactivate collecting UI
         WaterSound.SetActive(false);
@@ -1569,12 +1666,14 @@ public class GameManager : MonoBehaviour
         {
             binocsActive = false;
             binocUI.SetActive(false);
+            cam.fieldOfView = 60;
         }
 
         else
         {
             binocsActive = true;
             binocUI.SetActive(true);
+            cam.fieldOfView = 40;
         }
 
         CloseInventory();

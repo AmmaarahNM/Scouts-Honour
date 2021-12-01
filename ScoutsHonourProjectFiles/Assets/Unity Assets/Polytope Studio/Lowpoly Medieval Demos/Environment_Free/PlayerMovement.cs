@@ -24,6 +24,9 @@ public class PlayerMovement : MonoBehaviour
     float defaultYPos;
     float timer;
 
+    public AudioSource walkingLand;
+    public AudioSource walkingWater;
+
     private void Start()
     {
         defaultYPos = GM.cam.transform.localPosition.y;
@@ -59,7 +62,17 @@ public class PlayerMovement : MonoBehaviour
         move = transform.right * x + transform.forward * z;
 
         controller.Move(move * speed * Time.deltaTime);
+        
+        if (Input.GetAxis("Horizontal") > 0.1 || Input.GetAxis("Vertical") > 0.1)
+        {
+            walkingLand.Play();
+            Debug.Log("iswalking");
+        }
 
+        else
+        {
+            walkingLand.Stop();
+        }
         /*if (Input.GetButtonDown("Jump") && isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
@@ -69,6 +82,8 @@ public class PlayerMovement : MonoBehaviour
         velocity.y += gravity * Time.deltaTime;
 
         controller.Move(velocity * Time.deltaTime);
+
+        
     }
 
     void HeadBob()
@@ -78,11 +93,20 @@ public class PlayerMovement : MonoBehaviour
             Debug.Log("This shit works apparently");
             timer += Time.deltaTime * bobSpeed;
             GM.cam.transform.localPosition = new Vector3(GM.cam.transform.localPosition.x, defaultYPos + Mathf.Sin(timer) * bobAmount, GM.cam.transform.localPosition.z);
+            
+            
         }
+
+        
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        if (other.gameObject.tag == "Nest")
+        {
+            GM.nestSeen = true;
+        }
+
         if (other.gameObject.tag == "Log")
         {
             GM.LogEnabled = true;
@@ -157,6 +181,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
+        if (other.gameObject.tag == "Nest")
+        {
+            GM.nestSeen = false;
+        }
+
         if (other.gameObject.tag == "Water")
         {
             GM.collectWaterEnabled = false;

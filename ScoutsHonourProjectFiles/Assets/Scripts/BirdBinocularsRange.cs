@@ -69,7 +69,7 @@ public class BirdBinocularsRange : MonoBehaviour
             isVisible = false;
         }
         //first check if zoomed to a certain value
-        if (isVisible && GM.binocsActive)
+        if (isVisible && GM.binocsActive && GM.cam.fieldOfView <= 30)
         {
             if (!firstSeen)
             {
