@@ -24,6 +24,7 @@ public class FishingGame : MonoBehaviour
     public GameObject reelingBar;
     public Image reelValue;
     float storedRange;
+    GameObject storedFishObj;
     // Start is called before the first frame update
     void Start()
     {
@@ -159,6 +160,7 @@ public class FishingGame : MonoBehaviour
                 Debug.Log("fish caught");
                 hitFish = true;
                 hit.collider.gameObject.SetActive(false);
+                storedFishObj = hit.collider.gameObject;
                 //deactivate that fish
                 
             }
@@ -186,6 +188,13 @@ public class FishingGame : MonoBehaviour
             fishingInfo.text = "No luck! Try again!";
         }
         reelSlider.value = 0;
+        StartCoroutine(ReactivateFish());
+    }
+
+    IEnumerator ReactivateFish()
+    {
+        yield return new WaitForSeconds(15);
+        storedFishObj.SetActive(true);
     }
 
    
