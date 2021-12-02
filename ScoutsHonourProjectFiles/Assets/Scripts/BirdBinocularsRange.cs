@@ -103,7 +103,7 @@ public class BirdBinocularsRange : MonoBehaviour
 
     IEnumerator DeactivateNewInfo()
     {
-        yield return new WaitForSeconds(4);
+        yield return new WaitForSeconds(5);
         GM.newBirdInfo.SetActive(false);
         GM.newPlantInfo.SetActive(false);
     }

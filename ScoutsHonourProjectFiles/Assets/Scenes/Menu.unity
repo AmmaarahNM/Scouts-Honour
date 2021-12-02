@@ -708,7 +708,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -14}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 188.463, y: 107.443}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &712564510
 MonoBehaviour:
@@ -966,8 +966,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 13.108, y: -1.3996}
-  m_SizeDelta: {x: 1893.8, y: 1051.7393}
+  m_AnchoredPosition: {x: 7.226, y: 13.323}
+  m_SizeDelta: {x: 1905.562, y: 1081.184}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &900391623
 MonoBehaviour:
@@ -1006,7 +1006,9 @@ MonoBehaviour:
     Studio, Standard Unity Asset Store EULA https://assetstore.unity.com/packages/3d/environments/lowpoly-environment-nature-pack-free-187052\n\nLiving
     Birds by Dinopunch, Standard Unity Asset Store EULA https://assetstore.unity.com/packages/3d/characters/animals/birds/living-birds-15649\n\nSound
     Effects:\n\nRPG Audio by Kenney, License: CC0 1.0 free asset \nhttps://assetstore.unity.com/packages/3d/characters/animals/birds/living-birds-15649\n\nAmbient
-    Nature Sounds by Debrup Travel & Films, License and Royalty free \nhttps://www.toneden.io/debrup-travel--films/post/download-30-free-ambient-nature-sounds-effect\n\n"
+    Nature Sounds by Debrup Travel & Films, License and Royalty free \nhttps://www.toneden.io/debrup-travel--films/post/download-30-free-ambient-nature-sounds-effect\n\nAll
+    information on Yellowstone National Park has been taken from Yellowstone National
+    Park's website, we do not have any rights to information nor logos https://www.yellowstonenationalpark.com/\n"
 --- !u!222 &900391624
 CanvasRenderer:
   m_ObjectHideFlags: 0

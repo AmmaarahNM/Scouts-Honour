@@ -17,10 +17,10 @@ public class CollectionUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (timePassed < (timeCheck))
+        if (timePassed < (timeCheck + 0.1f))
         {
             timePassed += Time.deltaTime;
-            collectionUI.fillAmount = timePassed / (timeCheck);
+            collectionUI.fillAmount = timePassed / (timeCheck + 0.1f);
         }
 
         else

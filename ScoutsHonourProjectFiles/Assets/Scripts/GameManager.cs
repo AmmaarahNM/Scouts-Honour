@@ -310,6 +310,8 @@ public class GameManager : MonoBehaviour
     public AudioSource eatingFruitSound;
     public AudioSource eatingSound;
     public AudioSource drinkingSound;
+
+    public GameObject allObjectives;
     //PrefabActivation[] prefabScripts;
 
     // Start is called before the first frame update
@@ -469,7 +471,12 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        if (Input.GetKeyDown(KeyCode.P))
+        //if (Input.GetKeyDown(KeyCode.P))
+        //{
+        //    ActivateChemSet();  
+        //}
+
+        if (chemSetOpen && Input.GetKeyDown(KeyCode.P))
         {
             ActivateChemSet();
         }
@@ -493,7 +500,7 @@ public class GameManager : MonoBehaviour
 
         if (hydrated > 1 && !isDrinking && !inventoryOpen)
         {
-            hydrated -= (Time.deltaTime) / 4;
+            hydrated -= (Time.deltaTime) / 5;
         }
         hydratedBar.fillAmount = hydrated / 100;
 
@@ -533,7 +540,7 @@ public class GameManager : MonoBehaviour
 
         if (isEatingFish && fed < 100)
         {
-            fed += 8 * Time.deltaTime;
+            fed += 9 * Time.deltaTime;
         }
 
         if (isEatingMango || isBurning)
@@ -1162,18 +1169,33 @@ public class GameManager : MonoBehaviour
             rawFishPrompt.SetActive(true);
         }
     }
-
+    
     public void WaterPurified()
     {
+        waterPurifiedNotif.SetActive(true);
         ObjectivesCompleted(5);
         Debug.Log("Water purified");
         chemUsed = true;
-        ActivateChemSet();
-        waterPurifiedNotif.SetActive(true);
         dirtyWater.SetActive(false);
         cleanWater.SetActive(true);
         //prompt saying water is purified
-        purified = true;
+        chemistrySet.SetActive(false);
+        controller.enabled = true;
+
+
+        //if (inventoryOpen == false)
+        //{
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
+            PM.enabled = true;
+            ML.enabled = true;
+        //
+
+        chemSetOpen = false;
+        
+        
+
     }
 
     public void DrinkDirtyWater()
@@ -1650,16 +1672,19 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(2);
         storageFullUI.SetActive(false);
     }
+
+   
     public void ActivateChemSet()
     {
-        
+        CloseInventory();
+
         if (chemSetOpen)
         {
             chemistrySet.SetActive(false);
             controller.enabled = true;
-                
 
-            if (!inventoryOpen)
+
+            if (inventoryOpen == false)
             {
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
@@ -1669,10 +1694,11 @@ public class GameManager : MonoBehaviour
             }
 
             chemSetOpen = false;
+            
 
         }
 
-        else
+        else if (!chemSetOpen)
         {
             chemistrySet.SetActive(true);
             controller.enabled = false;
@@ -1684,10 +1710,10 @@ public class GameManager : MonoBehaviour
             ML.enabled = false;
             Cursor.lockState = CursorLockMode.None;
             chemSetOpen = true;
+            
         }
 
 
-        CloseInventory();
             
         
     }
@@ -1776,6 +1802,7 @@ public class GameManager : MonoBehaviour
                 noObjectivesBadge.SetActive(false);
                 objectivesEndBadge.SetActive(true);
                 //objectivesBadgeAchievement.SetActive(true);
+                StartCoroutine(ActivateWinCondition());
                 WinCondition();
             }
         }
@@ -1981,14 +2008,29 @@ public class GameManager : MonoBehaviour
     public void LoseCondition()
     {
         gamePaused = true;
+        PM.walkingLand.SetActive(false);
+        PM.walkingLandFast.SetActive(false);
+        PM.walkingWater.SetActive(false);
         Time.timeScale = 0;
         lostUI.SetActive(true);
         badgesEnd.SetActive(true);
     }
 
+    IEnumerator ActivateWinCondition()
+    {
+        yield return new WaitForSeconds(1);
+        allObjectives.SetActive(true);
+        yield return new WaitForSeconds(4);
+        WinCondition();
+    }
+
     public void WinCondition()
     {
+        allObjectives.SetActive(false);
         gamePaused = true;
+        PM.walkingLand.SetActive(false);
+        PM.walkingLandFast.SetActive(false);
+        PM.walkingWater.SetActive(false);
         Time.timeScale = 0;
         winUI.SetActive(true);
         badgesEnd.SetActive(true);

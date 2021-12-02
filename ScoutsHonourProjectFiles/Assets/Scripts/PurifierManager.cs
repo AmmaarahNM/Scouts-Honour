@@ -28,6 +28,8 @@ public class PurifierManager : MonoBehaviour
     public Animator handsAnim;
     public Animator vialAnim;
 
+    public GameObject tubeFull;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -101,7 +103,7 @@ public class PurifierManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (vialOne[0].material.color == vialOne[1].material.color) // && vialOne[2].enabled == false)
+        if (vialOne[0].material.color == vialOne[1].material.color && vialOne[0].material != null) // && vialOne[2].enabled == false)
         {
             vialOneReady = true;
         }
@@ -111,7 +113,7 @@ public class PurifierManager : MonoBehaviour
             vialOneReady = false;
         }
 
-        if (vialTwo[0].material.color == vialTwo[1].material.color) // && vialTwo[2].enabled == false)
+        if (vialTwo[0].material.color == vialTwo[1].material.color && vialTwo[0].material != null) // && vialTwo[2].enabled == false)
         {
             vialTwoReady = true;
         }
@@ -121,7 +123,7 @@ public class PurifierManager : MonoBehaviour
             vialTwoReady = false;
         }
 
-        if (vialThree[0].material.color == vialThree[1].material.color) // && vialThree[2].enabled == false)
+        if (vialThree[0].material.color == vialThree[1].material.color && vialThree[0].material != null) // && vialThree[2].enabled == false)
         {
             vialThreeReady = true;
         }
@@ -163,10 +165,10 @@ public class PurifierManager : MonoBehaviour
             vialThreeReady = false;
         }*/
 
-        if (vialOneReady && vialTwoReady && vialThreeReady)
+        if (vialOneReady && vialTwoReady && vialThreeReady && GM.waterCollected)
         {
-            Debug.Log("hurrhaa");
-            GM.WaterPurified();
+            StartCoroutine(Purified());
+            
             
         }
 
@@ -283,11 +285,19 @@ public class PurifierManager : MonoBehaviour
         }
     }
 
+
+    IEnumerator Purified()
+    {
+        yield return new WaitForSeconds(1.8f);
+        Debug.Log("hurrhaa");
+        GM.purified = true;
+        GM.WaterPurified();
+    }
     public void OneToTwo()
     {
         if (vialTwo[0].enabled && vialTwo[1].enabled && vialTwo[2].enabled)
         {
-            Debug.Log("vial 2 full!");
+            FullTube();
         }
 
         else if (!vialTwo[0].enabled)
@@ -437,11 +447,22 @@ public class PurifierManager : MonoBehaviour
         }*/
     }
 
+    public void FullTube()
+    {
+        tubeFull.SetActive(true);
+        StartCoroutine(Deac());
+    }
+
+    IEnumerator Deac()
+    {
+        yield return new WaitForSeconds(1.5f);
+        tubeFull.SetActive(false);
+    }
     public void OneToThree()
     {
         if (vialThree[0].enabled && vialThree[1].enabled && vialThree[2].enabled)
         {
-            Debug.Log("vial 3 full!");
+            FullTube();
         }
 
         else if (!vialThree[0].enabled)
@@ -506,7 +527,7 @@ public class PurifierManager : MonoBehaviour
     {
         if (vialOne[0].enabled && vialOne[1].enabled && vialOne[2].enabled)
         {
-            Debug.Log("vial 1 full!");
+            FullTube();
         }
 
         else if (!vialOne[0].enabled)

@@ -69,28 +69,32 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.D) ||
             Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow))
         {
-            if (GM.collectWaterEnabled)
+            if (!GM.gamePaused)
             {
-                walkingWater.SetActive(true);
-                walkingLandFast.SetActive(false);
-                walkingLand.SetActive(false);
-            }
-
-            else
-            {
-                walkingWater.SetActive(false);
-                if (speed < 5)
+                if (GM.collectWaterEnabled)
                 {
-                    walkingLand.SetActive(true);
+                    walkingWater.SetActive(true);
                     walkingLandFast.SetActive(false);
+                    walkingLand.SetActive(false);
                 }
 
                 else
                 {
-                    walkingLand.SetActive(false);
-                    walkingLandFast.SetActive(true);
+                    walkingWater.SetActive(false);
+                    if (speed < 5)
+                    {
+                        walkingLand.SetActive(true);
+                        walkingLandFast.SetActive(false);
+                    }
+
+                    else
+                    {
+                        walkingLand.SetActive(false);
+                        walkingLandFast.SetActive(true);
+                    }
                 }
             }
+            
             
             
         }

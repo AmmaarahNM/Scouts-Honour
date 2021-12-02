@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DeactivateBadgeNotification : MonoBehaviour
+public class PromptDeactivation : MonoBehaviour
 {
     bool deactivate;
     // Start is called before the first frame update
@@ -14,7 +14,7 @@ public class DeactivateBadgeNotification : MonoBehaviour
     IEnumerator Deactivate()
     {
         deactivate = true;
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(10);
         deactivate = false;
         this.gameObject.SetActive(false);
     }
