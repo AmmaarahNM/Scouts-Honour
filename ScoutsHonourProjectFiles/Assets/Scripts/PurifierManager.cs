@@ -207,7 +207,7 @@ public class PurifierManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Alpha3))
             {
                 oneRaised = false;
-                handsAnim.Play("HandTestTube3 -Down");
+                handsAnim.Play("HandTestTube3-Down");
                 vialAnim.Play("TestTube3-Down");
                 //VIAL ONE DOWN ANIMATION
             }
@@ -278,7 +278,7 @@ public class PurifierManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
                 threeRaised = false;
-                handsAnim.Play("HandTestTube1-Down");
+                handsAnim.Play("HandTestTube1 -Down");
                 vialAnim.Play("TestTube1-Down");
                 //VIAL THREE DOWN ANIMATION
             }

@@ -1292,7 +1292,7 @@ public class GameManager : MonoBehaviour
             PM.enabled = true;
             ML.enabled = true;
         }
-        StartCoroutine(FireOut());
+        //StartCoroutine(FireOut());
     }
 
     IEnumerator FireOut()
@@ -1803,7 +1803,7 @@ public class GameManager : MonoBehaviour
                 objectivesEndBadge.SetActive(true);
                 //objectivesBadgeAchievement.SetActive(true);
                 StartCoroutine(ActivateWinCondition());
-                WinCondition();
+                //WinCondition();
             }
         }
 
