@@ -24,6 +24,12 @@ public class PlayerMovement : MonoBehaviour
     float defaultYPos;
     float timer;
 
+    public GameObject walkingLand;
+    public GameObject walkingWater;
+
+    public GameObject walkingLandFast;
+    
+
     private void Start()
     {
         defaultYPos = GM.cam.transform.localPosition.y;
@@ -59,7 +65,46 @@ public class PlayerMovement : MonoBehaviour
         move = transform.right * x + transform.forward * z;
 
         controller.Move(move * speed * Time.deltaTime);
+        
+        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.D) ||
+            Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            if (!GM.gamePaused)
+            {
+                if (GM.collectWaterEnabled)
+                {
+                    walkingWater.SetActive(true);
+                    walkingLandFast.SetActive(false);
+                    walkingLand.SetActive(false);
+                }
 
+                else
+                {
+                    walkingWater.SetActive(false);
+                    if (speed < 5)
+                    {
+                        walkingLand.SetActive(true);
+                        walkingLandFast.SetActive(false);
+                    }
+
+                    else
+                    {
+                        walkingLand.SetActive(false);
+                        walkingLandFast.SetActive(true);
+                    }
+                }
+            }
+            
+            
+            
+        }
+
+        if (move.x == 0 && move.z == 0)
+        {
+            walkingLand.SetActive(false);
+            walkingLandFast.SetActive(false);
+            walkingWater.SetActive(false);
+        }
         /*if (Input.GetButtonDown("Jump") && isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
@@ -69,6 +114,8 @@ public class PlayerMovement : MonoBehaviour
         velocity.y += gravity * Time.deltaTime;
 
         controller.Move(velocity * Time.deltaTime);
+
+        
     }
 
     void HeadBob()
@@ -78,11 +125,21 @@ public class PlayerMovement : MonoBehaviour
             Debug.Log("This shit works apparently");
             timer += Time.deltaTime * bobSpeed;
             GM.cam.transform.localPosition = new Vector3(GM.cam.transform.localPosition.x, defaultYPos + Mathf.Sin(timer) * bobAmount, GM.cam.transform.localPosition.z);
+            
+            
         }
+
+        
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        if (other.gameObject.tag == "Nest")
+        {
+            GM.nestSeen = true;
+            GM.ObjectivesCompleted(8);
+        }
+
         if (other.gameObject.tag == "Log")
         {
             GM.LogEnabled = true;
@@ -157,6 +214,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
+        if (other.gameObject.tag == "Nest")
+        {
+            GM.nestSeen = false;
+        }
+
         if (other.gameObject.tag == "Water")
         {
             GM.collectWaterEnabled = false;

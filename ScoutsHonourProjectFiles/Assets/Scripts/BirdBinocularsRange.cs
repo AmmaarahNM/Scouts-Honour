@@ -69,7 +69,7 @@ public class BirdBinocularsRange : MonoBehaviour
             isVisible = false;
         }
         //first check if zoomed to a certain value
-        if (isVisible && GM.binocsActive)
+        if (isVisible && GM.binocsActive && GM.cam.fieldOfView <= 30)
         {
             if (!firstSeen)
             {
@@ -103,7 +103,7 @@ public class BirdBinocularsRange : MonoBehaviour
 
     IEnumerator DeactivateNewInfo()
     {
-        yield return new WaitForSeconds(4);
+        yield return new WaitForSeconds(5);
         GM.newBirdInfo.SetActive(false);
         GM.newPlantInfo.SetActive(false);
     }

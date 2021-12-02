@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
     bool isEatingMango;
     public GameObject mangoDangerInfo;
 
-    bool waterCollected;
+    public bool waterCollected;
     bool woodCollected;
     public bool fishCaught;
 
@@ -223,7 +223,7 @@ public class GameManager : MonoBehaviour
     public GameObject unequipAxePrompt;
     public GameObject packChemSetPrompt;
     public GameObject closeJournalPrompt;
-    public GameObject textBackground;
+    //public GameObject textBackground;
     public TerrainActivationTriggers[] terrainScripts;
 
     public bool firstFishCaught;
@@ -261,6 +261,7 @@ public class GameManager : MonoBehaviour
 
     public bool binocsActive;
     public GameObject binocUI;
+    public GameObject binocText;
     public Text birdName;
     public GameObject newBirdInfo;
 
@@ -272,22 +273,68 @@ public class GameManager : MonoBehaviour
     public GameObject fishEndBadge;
     public GameObject fireEndBadge;
     public GameObject birdEndBadge;
+    public GameObject toolsEndBadge;
 
     public GameObject winUI;
 
     public bool purified;
+    public PurifierManager Purif;
+    public GameObject chemInfo;
+
+    public GameObject drinkingWaterUI;
+    public GameObject dirtyWaterDangerInfo;
+    public GameObject dirtyWaterPrompt;
+    public GameObject cleanWaterPrompt;
+
+    public GameObject dirtyWater;
+    public GameObject cleanWater;
+    public bool nestSeen;
+
+    public GameObject collectEggsPrompt;
+    public GameObject noToEggs;
+    public GameObject startLetter;
+    public bool letterClosed;
+    public GameObject waterPurifiedNotif;
+
+    public GameObject sticksInfo;
+    public GameObject comeCloserPrompt;
+    public GameObject cookFishInvPrompt;
+
+    bool axeUsed;
+    bool compassUsed;
+    bool chemUsed;
+    bool rodUsed;
+    bool binocsUsed;
+    bool firstUseRegister;
+
+    public AudioSource eatingFruitSound;
+    public AudioSource eatingSound;
+    public AudioSource drinkingSound;
+
+    public GameObject allObjectives;
     //PrefabActivation[] prefabScripts;
 
     // Start is called before the first frame update
     void Start()
     {
         mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Time.timeScale = 1;
-        gamePaused = false;
+        Time.timeScale = 0;
+        gamePaused = true;
+        startLetter.SetActive(true);
         energyDecrease = 4;
+        ML.enabled = false;
 
         //prefabScripts = FindObjectsOfTypeAll<PrefabActivation>();
 
+    }
+
+    public void BeginGame()
+    {
+        gamePaused = false;
+        startLetter.SetActive(false);
+        Time.timeScale = 1;
+        letterClosed = true;
+        ML.enabled = true;
     }
 
      
@@ -302,7 +349,7 @@ public class GameManager : MonoBehaviour
         poisonedIcon.SetActive(isPoisoned);
         burntIcon.SetActive(isBurnt);
 
-        
+        chemInfo.SetActive(chemSetOpen);
         
        /* foreach (TerrainActivationTriggers terrain in terrainScripts)
         {
@@ -318,11 +365,11 @@ public class GameManager : MonoBehaviour
         {
             hands.SetActive(true);
         }*/
-        if (firstAloe && firstApple && firstGinger && firstMango && firstPlum)
+        /*if (firstAloe && firstApple && firstGinger && firstMango && firstPlum)
         {
             ObjectivesCompleted(7);
-        }
-        if (Input.GetKeyDown(KeyCode.Escape))
+        }*/
+        if (Input.GetKeyDown(KeyCode.Escape) && letterClosed)
         {
             gamePaused = true;
             escapeTab.SetActive(true);
@@ -342,14 +389,27 @@ public class GameManager : MonoBehaviour
             if (Input.GetAxis("Mouse ScrollWheel") > 0 && cam.fieldOfView > 20)
             {
                 cam.fieldOfView--;
+                binocText.SetActive(false);
             }
 
-            if (Input.GetAxis("Mouse ScrollWheel") < 0 && cam.fieldOfView < 70)
+            if (Input.GetAxis("Mouse ScrollWheel") < 0 && cam.fieldOfView < 55)
             {
                 cam.fieldOfView++;
             }
 
 
+        }
+
+        if (compassUsed && chemUsed && rodUsed && axeUsed && binocsUsed)
+        {
+            if (!firstUseRegister)
+            {
+                toolsBadge.SetActive(true);
+                toolsEndBadge.SetActive(true);
+                noToolsBadge.SetActive(false);
+                toolsBadgeAchievement.SetActive(true);
+                firstUseRegister = true;
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.B))
@@ -363,9 +423,10 @@ public class GameManager : MonoBehaviour
 
             else
             {
+                binocsUsed = true;
                 binocsActive = true;
                 binocUI.SetActive(true);
-                cam.fieldOfView = 30;
+                cam.fieldOfView = 40;
             }
         }
 
@@ -410,7 +471,12 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        if (Input.GetKeyDown(KeyCode.P))
+        //if (Input.GetKeyDown(KeyCode.P))
+        //{
+        //    ActivateChemSet();  
+        //}
+
+        if (chemSetOpen && Input.GetKeyDown(KeyCode.P))
         {
             ActivateChemSet();
         }
@@ -418,6 +484,7 @@ public class GameManager : MonoBehaviour
         if (Input.GetKey(KeyCode.C))
         {
             compass.SetActive(true);
+            compassUsed = true;
         }
 
         else
@@ -433,7 +500,7 @@ public class GameManager : MonoBehaviour
 
         if (hydrated > 1 && !isDrinking && !inventoryOpen)
         {
-            hydrated -= (Time.deltaTime) / 4;
+            hydrated -= (Time.deltaTime) / 5;
         }
         hydratedBar.fillAmount = hydrated / 100;
 
@@ -473,7 +540,7 @@ public class GameManager : MonoBehaviour
 
         if (isEatingFish && fed < 100)
         {
-            fed += 8 * Time.deltaTime;
+            fed += 9 * Time.deltaTime;
         }
 
         if (isEatingMango || isBurning)
@@ -503,7 +570,7 @@ public class GameManager : MonoBehaviour
 
         if (isDrinking && hydrated < 100)
         {
-            hydrated += 2 * Time.deltaTime;
+            hydrated += 20 * Time.deltaTime;
 
             //amountDrank += 2 * Time.deltaTime;
             //set bool false once amountDrank has reached desired value;
@@ -511,7 +578,7 @@ public class GameManager : MonoBehaviour
 
         if (isResting && energy < 100)
         {
-            energy += 4 * Time.deltaTime;
+            energy += 5 * Time.deltaTime;
 
             //amountRested += 2 * Time.deltaTime;
             //set bool false once amountRested has reached desired value;
@@ -610,7 +677,20 @@ public class GameManager : MonoBehaviour
 
         ///TRIGGER COLLECTING STUFF
         ///
+        if (nestSeen)
+        {
+            collectEggsPrompt.SetActive(true);
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                collectEggsPrompt.SetActive(false);
+                noToEggs.SetActive(true);
+            }
+        }
 
+        else
+        {
+            collectEggsPrompt.SetActive(false);
+        }
         if (collectAloeEnabled)
         {
             collectAloePrompt.SetActive(true);
@@ -795,7 +875,7 @@ public class GameManager : MonoBehaviour
                 {
                     WaterSound.SetActive(true);
                     CollectWater();
-                    ObjectivesCompleted(3);
+                    ObjectivesCompleted(4);
                 }
                 
             }
@@ -913,6 +993,7 @@ public class GameManager : MonoBehaviour
                     ML.enabled = false;
                   //CampSound.SetActive(true); //wait till fire started
                     sticks.SetActive(true);
+                    sticksInfo.SetActive(true);
                   //stick.transform.position = mousePos;
                      // cam.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, 5));
                     //lock mouse pos to stick
@@ -928,9 +1009,11 @@ public class GameManager : MonoBehaviour
                     sticks.SetActive(false);
                     fireBadge.SetActive(true);
                     isFire = true;
+                    sticksInfo.SetActive(false);
                     //fireBadgeAchievement.SetActive(true);
                     //activate fire and particle effect stuff
                     StartCoroutine(ReactivateMouse());
+                    
                     //StartCoroutine(FireOut());
 
                     if (fishCaught)
@@ -960,12 +1043,14 @@ public class GameManager : MonoBehaviour
                 rawFishAnim.SetActive(true);
                 cookedFishAnim.SetActive(false);
                 burntFishAnim.SetActive(false);
+                cookFishPrompt.SetActive(false);
             }
 
             else if (cookingTime > 7 && cookingTime <= 12)
             {
                 rawFishAnim.SetActive(false);
                 fishReady = true;
+                ObjectivesCompleted(7);
                 cookedFishAnim.SetActive(true);
                 burntFishAnim.SetActive(false);
                 eatCookedFishPrompt.SetActive(true);
@@ -978,7 +1063,7 @@ public class GameManager : MonoBehaviour
                 burntFishAnim.SetActive(true);
                 eatCookedFishPrompt.SetActive(false);
                 burntFishUI.SetActive(true);
-                fishCooking = false;
+                
                 fishReady = false;
                 StartCoroutine(DeactivateBurntFish());
             }
@@ -1002,7 +1087,17 @@ public class GameManager : MonoBehaviour
         //hasFish.SetActive(fishCaught);
         if (Input.GetKeyDown(KeyCode.E) && fishReady)
         {
-            EatCookedFish();
+            if (startFireEnabled)
+            {
+                comeCloserPrompt.SetActive(false);
+                EatCookedFish();
+            }
+
+            else
+            {
+                comeCloserPrompt.SetActive(true);
+            }
+            
         }
 
         
@@ -1018,6 +1113,7 @@ public class GameManager : MonoBehaviour
     IEnumerator DeactivateBurntFish()
     {
         yield return new WaitForSeconds(2);
+        fishCooking = false;
         burntFishAnim.SetActive(false);
         burntFishUI.SetActive(false);
     }
@@ -1029,6 +1125,7 @@ public class GameManager : MonoBehaviour
 
         eatApplePrompt.SetActive(false);
         isEatingFish = true;
+        eatingSound.Play();
         eatingFishUI.SetActive(true);
         CloseInventory();
         controller.enabled = false;
@@ -1042,21 +1139,29 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(2);
         isEatingFish = false;
+        eatingSound.Stop();
         controller.enabled = true;
         eatingFishUI.SetActive(false);
+    }
+
+    public void SelectCookFish()
+    {
+        CloseInventory();
+        fishCaught = false;
+        fishInventory.SetActive(false);
+        fishInvClicked = false;
+        fishCooking = true;
+        canCookFish = false;
+        cookFishInvPrompt.SetActive(false);
     }
     public void FishInventoryClicked()
     {
         if (canCookFish)
         {
+            cookFishInvPrompt.SetActive(true);
             //Activate cooking UI
             //Timer thing for burnt or not
-            CloseInventory();
-            fishCaught = false;
-            fishInventory.SetActive(false);
-            fishInvClicked = false;
-            fishCooking = true;
-            canCookFish = false;
+            
         }
 
         else
@@ -1064,12 +1169,90 @@ public class GameManager : MonoBehaviour
             rawFishPrompt.SetActive(true);
         }
     }
-
+    
     public void WaterPurified()
     {
+        waterPurifiedNotif.SetActive(true);
+        ObjectivesCompleted(5);
+        Debug.Log("Water purified");
+        chemUsed = true;
+        dirtyWater.SetActive(false);
+        cleanWater.SetActive(true);
+        //prompt saying water is purified
+        chemistrySet.SetActive(false);
+        controller.enabled = true;
+
+
+        //if (inventoryOpen == false)
+        //{
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
+            PM.enabled = true;
+            ML.enabled = true;
+        //
+
+        chemSetOpen = false;
+        
+        
 
     }
 
+    public void DrinkDirtyWater()
+    {
+        waterCollected = false;
+        dirtyWaterPrompt.SetActive(false);
+        CloseInventory();
+        isEatingMango = true;
+        drinkingSound.Play();
+        controller.enabled = false;
+        drinkingWaterUI.SetActive(true);
+        waterInventory.SetActive(false);
+        StartCoroutine(StopDrinkingDirty());
+    }
+
+    IEnumerator StopDrinkingDirty()
+    {
+        yield return new WaitForSeconds(2);
+        isEatingMango = false;
+        drinkingSound.Stop();
+        controller.enabled = true;
+        drinkingWaterUI.SetActive(false);
+        dirtyWaterDangerInfo.SetActive(true);
+        isPoisoned = true;
+        dangerUI.SetActive(true);
+
+        yield return new WaitForSeconds(3);
+        dirtyWaterDangerInfo.SetActive(false);
+        dangerUI.SetActive(false);
+    }
+
+    public void DrinkCleanWater()
+    {
+        waterCollected = false;
+        
+        cleanWaterPrompt.SetActive(false);
+        CloseInventory();
+        isDrinking = true;
+        drinkingSound.Play();
+        controller.enabled = false;
+        drinkingWaterUI.SetActive(true);
+        waterInventory.SetActive(false);
+        Purif.vialOneReady = false;
+        Purif.vialThreeReady = false;
+        Purif.vialTwoReady = false;
+        purified = false;
+        StartCoroutine(StopDrinking());
+    }
+
+    IEnumerator StopDrinking()
+    {
+        yield return new WaitForSeconds(2);
+        isDrinking = false;
+        drinkingSound.Stop();
+        controller.enabled = true;
+        drinkingWaterUI.SetActive(false);
+    }
     public void RestFunction()
     {
         isResting = true;
@@ -1101,18 +1284,26 @@ public class GameManager : MonoBehaviour
         //fireBadgeAchievement.SetActive(true);
         yield return new WaitForSeconds(3);
         fireBadgeAchievement.SetActive(false);
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        PM.enabled = true;
-        ML.enabled = true;
+        
+        if (!inventoryOpen)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            PM.enabled = true;
+            ML.enabled = true;
+        }
+        StartCoroutine(FireOut());
     }
 
     IEnumerator FireOut()
     {
-        yield return new WaitForSeconds(10);
+        yield return new WaitForSeconds(180);
         CampSound.SetActive(false);
         FireEffect.SetActive(false);
         isFire = false;
+        fireStarted = false;
+        fireplaceLogs.SetActive(false);
+        logsActive = false;
 
     }
     public void OpenJournal()
@@ -1158,9 +1349,10 @@ public class GameManager : MonoBehaviour
     {
         
         fishCaught = true;
+        rodUsed = true;
         fishInventory.SetActive(true);
         AddToInventory(0);
-        ObjectivesCompleted(5);
+        ObjectivesCompleted(6);
         if (!firstFishCaught)
         {
             firstFishCaught = true;
@@ -1179,7 +1371,7 @@ public class GameManager : MonoBehaviour
         BagGlow.SetActive(true);
         addingIcon.sprite = addingImages[index];
         movingToBag.SetActive(true);
-        textBackground.SetActive(true);
+        //textBackground.SetActive(true);
 
         switch (index)
         {
@@ -1244,7 +1436,7 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(3);
         bagUpdates.text = " ";
-        textBackground.SetActive(false);
+        //textBackground.SetActive(false);
     }
 
     public void CloseInventory()
@@ -1315,6 +1507,9 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(4);
         //update water collected amount
         waterCollected = true; //need this to activate treat water task
+        dirtyWater.SetActive(true);
+        cleanWater.SetActive(false);
+        Purif.StartPurification();
         AddToInventory(6);
         collectingWater.SetActive(false);  //deactivate collecting UI
         WaterSound.SetActive(false);
@@ -1436,6 +1631,7 @@ public class GameManager : MonoBehaviour
 
         else
         {
+            axeUsed = true;
             if (numberOfLogs <= 10)
             {
                 numberOfLogs += 5;
@@ -1476,40 +1672,48 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(2);
         storageFullUI.SetActive(false);
     }
+
+   
     public void ActivateChemSet()
     {
-        
-            if (chemSetOpen)
-            {
-                chemistrySet.SetActive(false);
-                controller.enabled = true;
-                chemSetOpen = false;
-                if (!inventoryOpen)
-            {
-                    Cursor.lockState = CursorLockMode.Locked;
-                    Cursor.visible = false;
-
-                    PM.enabled = true;
-                    ML.enabled = true;
-            }
-                
-        }
-
-            else
-            {
-                chemistrySet.SetActive(true);
-                controller.enabled = false;
-                chemSetOpen = true;
-
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
-
-                PM.enabled = false;
-                ML.enabled = false;
-        }
-
-
         CloseInventory();
+
+        if (chemSetOpen)
+        {
+            chemistrySet.SetActive(false);
+            controller.enabled = true;
+
+
+            if (inventoryOpen == false)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+
+                PM.enabled = true;
+                ML.enabled = true;
+            }
+
+            chemSetOpen = false;
+            
+
+        }
+
+        else if (!chemSetOpen)
+        {
+            chemistrySet.SetActive(true);
+            controller.enabled = false;
+                
+
+           
+
+            PM.enabled = false;
+            ML.enabled = false;
+            Cursor.lockState = CursorLockMode.None;
+            chemSetOpen = true;
+            
+        }
+
+
             
         
     }
@@ -1524,6 +1728,7 @@ public class GameManager : MonoBehaviour
                 axe2.SetActive(true);
                 axeActive = true;
                 axeCollected = true;
+                ObjectivesCompleted(2);
                 axeInventory.SetActive(true);
                 AddToInventory(1);
                 //axeInBag.SetActive(true);
@@ -1569,12 +1774,14 @@ public class GameManager : MonoBehaviour
         {
             binocsActive = false;
             binocUI.SetActive(false);
+            cam.fieldOfView = 60;
         }
 
         else
         {
             binocsActive = true;
             binocUI.SetActive(true);
+            cam.fieldOfView = 40;
         }
 
         CloseInventory();
@@ -1595,6 +1802,7 @@ public class GameManager : MonoBehaviour
                 noObjectivesBadge.SetActive(false);
                 objectivesEndBadge.SetActive(true);
                 //objectivesBadgeAchievement.SetActive(true);
+                StartCoroutine(ActivateWinCondition());
                 WinCondition();
             }
         }
@@ -1606,6 +1814,7 @@ public class GameManager : MonoBehaviour
     {
         eatGingerPrompt.SetActive(false);
         //isEating = true;
+        eatingSound.Play();
         CloseInventory();
         controller.enabled = false;
         eatingGingerUI.SetActive(true);
@@ -1625,6 +1834,7 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(2);
         //isEating = false;
+        eatingSound.Stop();
         isHealing = false;
         isPoisoned = false;
         controller.enabled = true;
@@ -1666,6 +1876,7 @@ public class GameManager : MonoBehaviour
     {
         eatApplePrompt.SetActive(false);
         isEating = true;
+        eatingFruitSound.Play();
         CloseInventory();
         controller.enabled = false;
         eatingAppleUI.SetActive(true);
@@ -1682,6 +1893,7 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(2);
         isEating = false;
+        eatingFruitSound.Stop();
         controller.enabled = true;
         eatingAppleUI.SetActive(false);
     }
@@ -1689,6 +1901,7 @@ public class GameManager : MonoBehaviour
     {
         eatPlumPrompt.SetActive(false);
         isEating = true;
+        eatingSound.Play();
         CloseInventory();
         controller.enabled = false;
         eatingPlumUI.SetActive(true);
@@ -1705,6 +1918,7 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(2);
         isEating = false;
+        eatingSound.Stop();
         controller.enabled = true;
         eatingPlumUI.SetActive(false);
     }
@@ -1713,6 +1927,7 @@ public class GameManager : MonoBehaviour
         eatMangoPrompt.SetActive(false);
         CloseInventory();
         isEatingMango = true;
+        eatingFruitSound.Play();
         controller.enabled = false;
         eatingMangoUI.SetActive(true);
         numberOfMangos--;
@@ -1728,6 +1943,7 @@ public class GameManager : MonoBehaviour
         rawFishPrompt.SetActive(false);
         CloseInventory();
         isEatingMango = true;
+        eatingSound.Play();
         controller.enabled = false;
         eatingFishUI.SetActive(true);
         fishCaught = false;
@@ -1739,8 +1955,9 @@ public class GameManager : MonoBehaviour
 
     IEnumerator StopEatingRawFish()
     {
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(2);
         isEatingMango = false;
+        eatingSound.Stop();
         controller.enabled = true;
         eatingFishUI.SetActive(false);
         rawFishDangerInfo.SetActive(true);
@@ -1754,8 +1971,9 @@ public class GameManager : MonoBehaviour
 
     IEnumerator StopEatingMango()
     {
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(2);
         isEatingMango = false;
+        eatingFruitSound.Stop();
         controller.enabled = true;
         eatingMangoUI.SetActive(false);
         mangoDangerInfo.SetActive(true);
@@ -1790,14 +2008,29 @@ public class GameManager : MonoBehaviour
     public void LoseCondition()
     {
         gamePaused = true;
+        PM.walkingLand.SetActive(false);
+        PM.walkingLandFast.SetActive(false);
+        PM.walkingWater.SetActive(false);
         Time.timeScale = 0;
         lostUI.SetActive(true);
         badgesEnd.SetActive(true);
     }
 
+    IEnumerator ActivateWinCondition()
+    {
+        yield return new WaitForSeconds(1);
+        allObjectives.SetActive(true);
+        yield return new WaitForSeconds(4);
+        WinCondition();
+    }
+
     public void WinCondition()
     {
+        allObjectives.SetActive(false);
         gamePaused = true;
+        PM.walkingLand.SetActive(false);
+        PM.walkingLandFast.SetActive(false);
+        PM.walkingWater.SetActive(false);
         Time.timeScale = 0;
         winUI.SetActive(true);
         badgesEnd.SetActive(true);
