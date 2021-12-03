@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Water
+  - Camp Location
+  - plant1
+  - Wood
+  - FishingSpot
+  - Fireplace
+  - Axe
+  - aloePlant
+  - gingerPlant
+  - ExplorePoint
+  - PlumTree
+  - AppleTree
+  - MangoTree
+  - ChemArea
+  - firstTerrain
+  - fire
+  - Log
+  - fish
+  - lb_bird
+  - lb_groundTarget
+  - lb_perchTarget
+  - Nest
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - Terrain
+  - Water
+  - UI
+  - fish
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
