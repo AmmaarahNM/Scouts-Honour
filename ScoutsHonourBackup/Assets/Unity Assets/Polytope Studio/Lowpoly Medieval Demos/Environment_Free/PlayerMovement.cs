@@ -28,6 +28,8 @@ public class PlayerMovement : MonoBehaviour
     public GameObject walkingWater;
 
     public GameObject walkingLandFast;
+
+    bool isOnWater;
     
 
     private void Start()
@@ -39,6 +41,7 @@ public class PlayerMovement : MonoBehaviour
     {
         this.transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
         isGrounded = Physics.CheckSphere(groundCheck.position, 0.1f, groundMask);
+
 
         bobSpeed = speed * 2.5f;
         bobAmount = speed * 0.05f;

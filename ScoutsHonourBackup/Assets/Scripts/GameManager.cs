@@ -540,7 +540,7 @@ public class GameManager : MonoBehaviour
 
         if (isEatingFish && fed < 100)
         {
-            fed += 9 * Time.deltaTime;
+            fed += 10 * Time.deltaTime;
         }
 
         if (isEatingMango || isBurning)
@@ -960,7 +960,7 @@ public class GameManager : MonoBehaviour
                     if (numberOfLogs >= 10)
                     {
                         setUpLogsPrompt.SetActive(false);
-                        numberOfLogs -= 1;
+                        numberOfLogs -= 10;
                         numberOfLogsUI.text = numberOfLogs.ToString() + "/10";
                         fireplaceLogs.SetActive(true);
                         WoodPlacementSound.SetActive(true);
@@ -2020,12 +2020,13 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(1);
         allObjectives.SetActive(true);
-        yield return new WaitForSeconds(4);
+        yield return new WaitForSeconds(6);
         WinCondition();
     }
 
     public void WinCondition()
     {
+        noToEggs.SetActive(false);
         allObjectives.SetActive(false);
         gamePaused = true;
         PM.walkingLand.SetActive(false);
